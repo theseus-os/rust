@@ -114,6 +114,30 @@ source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "8b26702f315f53b6071259e15dd9d64528213b44d61de1ec926eca7715d62203"
 
 [[package]]
+name = "apic"
+version = "0.1.0"
+source = "git+https://github.com/theseus-os/Theseus#74a81cf37654a666eb78e88cbc76fac585d97fb7"
+dependencies = [
+ "atomic_linked_list",
+ "bit_field 0.7.0",
+ "crossbeam-utils",
+ "irq_safety",
+ "kernel_config",
+ "lazy_static",
+ "log",
+ "memory",
+ "msr",
+ "owning_ref",
+ "pit_clock",
+ "raw-cpuid",
+ "spin 0.9.4",
+ "static_assertions",
+ "volatile 0.2.7",
+ "x86_64",
+ "zerocopy",
+]
+
+[[package]]
 name = "array_tool"
 version = "1.0.3"
 source = "registry+https://github.com/rust-lang/crates.io-index"
@@ -169,6 +193,11 @@ dependencies = [
 ]
 
 [[package]]
+name = "atomic_linked_list"
+version = "0.1.0"
+source = "git+https://github.com/theseus-os/Theseus#74a81cf37654a666eb78e88cbc76fac585d97fb7"
+
+[[package]]
 name = "atty"
 version = "0.2.14"
 source = "registry+https://github.com/rust-lang/crates.io-index"
@@ -199,6 +228,42 @@ dependencies = [
  "object 0.29.0",
  "rustc-demangle",
 ]
+
+[[package]]
+name = "bare-metal"
+version = "0.2.5"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+checksum = "5deb64efa5bd81e31fcd1938615a6d98c82eafcbcd787162b6f63b91d6bac5b3"
+dependencies = [
+ "rustc_version 0.2.3",
+]
+
+[[package]]
+name = "bincode"
+version = "2.0.0-rc.1"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+checksum = "f609ceb2c41b0d0277314a789ef0e7eb14593d5485f7c67320bed3924ebb1b33"
+dependencies = [
+ "serde",
+]
+
+[[package]]
+name = "bit_field"
+version = "0.7.0"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+checksum = "ff91a64014e1bc53bf643920f2c9ab5f0980d92a0948295f3ee550e9266849ad"
+
+[[package]]
+name = "bit_field"
+version = "0.10.1"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+checksum = "dcb6dd1c2376d2e096796e234a70e17e94cc2d5d54ff8ce42b28cef1d0d359a4"
+
+[[package]]
+name = "bitfield"
+version = "0.13.2"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+checksum = "46afbd2983a5d5a7bd740ccb198caf5b82f45c40c09c0eed36052d91cb92e719"
 
 [[package]]
 name = "bitflags"
@@ -243,6 +308,22 @@ source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "fa79dedbb091f449f1f39e53edf88d5dbe95f895dae6135a8d7b881fb5af73f5"
 dependencies = [
  "byte-tools",
+]
+
+[[package]]
+name = "block_allocator"
+version = "0.1.0"
+source = "git+https://github.com/theseus-os/Theseus#74a81cf37654a666eb78e88cbc76fac585d97fb7"
+dependencies = [
+ "linked_list_allocator",
+]
+
+[[package]]
+name = "bootloader_modules"
+version = "0.1.0"
+source = "git+https://github.com/theseus-os/Theseus#74a81cf37654a666eb78e88cbc76fac585d97fb7"
+dependencies = [
+ "memory_structs",
 ]
 
 [[package]]
@@ -355,7 +436,7 @@ dependencies = [
  "ignore",
  "im-rc",
  "indexmap",
- "itertools",
+ "itertools 0.10.1",
  "jobserver",
  "lazy_static",
  "lazycell",
@@ -372,7 +453,7 @@ dependencies = [
  "pretty_env_logger",
  "rustc-workspace-hack",
  "rustfix",
- "semver",
+ "semver 1.0.3",
  "serde",
  "serde_ignored",
  "serde_json",
@@ -425,7 +506,7 @@ version = "0.1.0"
 dependencies = [
  "directories",
  "rustc-workspace-hack",
- "rustc_version",
+ "rustc_version 0.4.0",
  "serde",
  "serde_json",
  "vergen",
@@ -462,7 +543,7 @@ dependencies = [
  "flate2",
  "git2",
  "glob",
- "itertools",
+ "itertools 0.10.1",
  "lazy_static",
  "remove_dir_all",
  "serde_json",
@@ -501,7 +582,7 @@ checksum = "c297bd3135f558552f99a0daa180876984ea2c4ffa7470314540dff8c654109a"
 dependencies = [
  "camino",
  "cargo-platform 0.1.2 (registry+https://github.com/rust-lang/crates.io-index)",
- "semver",
+ "semver 1.0.3",
  "serde",
  "serde_json",
 ]
@@ -581,7 +662,7 @@ dependencies = [
  "chalk-ir",
  "ena",
  "indexmap",
- "itertools",
+ "itertools 0.10.1",
  "petgraph",
  "rustc-hash",
  "tracing",
@@ -661,14 +742,14 @@ dependencies = [
  "filetime",
  "futures 0.3.19",
  "if_chain",
- "itertools",
+ "itertools 0.10.1",
  "parking_lot 0.12.1",
  "quote",
  "regex",
  "rustc-semver",
  "rustc-workspace-hack",
  "rustc_tools_util 0.2.0",
- "semver",
+ "semver 1.0.3",
  "serde",
  "syn",
  "tempfile",
@@ -685,7 +766,7 @@ dependencies = [
  "aho-corasick",
  "clap",
  "indoc",
- "itertools",
+ "itertools 0.10.1",
  "opener",
  "shell-escape",
  "tempfile",
@@ -699,12 +780,12 @@ dependencies = [
  "cargo_metadata",
  "clippy_utils",
  "if_chain",
- "itertools",
+ "itertools 0.10.1",
  "pulldown-cmark",
  "quine-mc_cluskey",
  "regex-syntax",
  "rustc-semver",
- "semver",
+ "semver 1.0.3",
  "serde",
  "serde_json",
  "tempfile",
@@ -862,12 +943,69 @@ source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "d6417fe6fc03a8b533fd2177742eeb39a90c7233eedec7bac96d4d6b69a09449"
 
 [[package]]
+name = "const_format"
+version = "0.2.26"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+checksum = "939dc9e2eb9077e0679d2ce32de1ded8531779360b003b4a972a7a39ec263495"
+dependencies = [
+ "const_format_proc_macros",
+]
+
+[[package]]
+name = "const_format_proc_macros"
+version = "0.2.22"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+checksum = "ef196d5d972878a48da7decb7686eded338b4858fbabeed513d63a7c98b2b82d"
+dependencies = [
+ "proc-macro2",
+ "quote",
+ "unicode-xid",
+]
+
+[[package]]
 name = "content_inspector"
 version = "0.2.4"
 source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "b7bda66e858c683005a53a9a60c69a4aca7eeaa45d124526e389f7aec8e62f38"
 dependencies = [
  "memchr",
+]
+
+[[package]]
+name = "context_switch"
+version = "0.1.0"
+source = "git+https://github.com/theseus-os/Theseus#74a81cf37654a666eb78e88cbc76fac585d97fb7"
+dependencies = [
+ "cfg-if 0.1.10",
+ "context_switch_avx",
+ "context_switch_regular",
+ "context_switch_sse",
+]
+
+[[package]]
+name = "context_switch_avx"
+version = "0.1.0"
+source = "git+https://github.com/theseus-os/Theseus#74a81cf37654a666eb78e88cbc76fac585d97fb7"
+dependencies = [
+ "context_switch_regular",
+ "zerocopy",
+]
+
+[[package]]
+name = "context_switch_regular"
+version = "0.1.0"
+source = "git+https://github.com/theseus-os/Theseus#74a81cf37654a666eb78e88cbc76fac585d97fb7"
+dependencies = [
+ "zerocopy",
+]
+
+[[package]]
+name = "context_switch_sse"
+version = "0.1.0"
+source = "git+https://github.com/theseus-os/Theseus#74a81cf37654a666eb78e88cbc76fac585d97fb7"
+dependencies = [
+ "context_switch_regular",
+ "zerocopy",
 ]
 
 [[package]]
@@ -895,8 +1033,38 @@ source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "9a21fa21941700a3cd8fcb4091f361a6a712fac632f85d9f487cc892045d55c6"
 
 [[package]]
+name = "core2"
+version = "0.4.0"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+checksum = "b49ba7ef1ad6107f8824dbe97de947cbaac53c44e7f9756a1fba0d37c1eec505"
+dependencies = [
+ "memchr",
+]
+
+[[package]]
+name = "cortex-m"
+version = "0.7.5"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+checksum = "cd20d4ac4aa86f4f75f239d59e542ef67de87cce2c282818dc6e84155d3ea126"
+dependencies = [
+ "bare-metal",
+ "bitfield",
+ "embedded-hal",
+ "volatile-register",
+]
+
+[[package]]
 name = "coverage_test_macros"
 version = "0.0.0"
+
+[[package]]
+name = "cow_arc"
+version = "0.1.0"
+source = "git+https://github.com/theseus-os/Theseus#74a81cf37654a666eb78e88cbc76fac585d97fb7"
+dependencies = [
+ "owning_ref",
+ "spin 0.9.4",
+]
 
 [[package]]
 name = "cpufeatures"
@@ -905,6 +1073,34 @@ source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "95059428f66df56b63431fdb4e1947ed2190586af5c5a8a8b71122bdf5a7f469"
 dependencies = [
  "libc",
+]
+
+[[package]]
+name = "crate_metadata"
+version = "0.1.0"
+source = "git+https://github.com/theseus-os/Theseus#74a81cf37654a666eb78e88cbc76fac585d97fb7"
+dependencies = [
+ "cow_arc",
+ "fs_node",
+ "goblin",
+ "hashbrown 0.11.2",
+ "log",
+ "memory",
+ "qp-trie",
+ "serde",
+ "spin 0.9.4",
+ "str_ref",
+ "xmas-elf",
+]
+
+[[package]]
+name = "crate_name_utils"
+version = "0.1.0"
+source = "git+https://github.com/theseus-os/Theseus#74a81cf37654a666eb78e88cbc76fac585d97fb7"
+dependencies = [
+ "crate_metadata",
+ "itertools 0.7.11",
+ "path",
 ]
 
 [[package]]
@@ -972,7 +1168,7 @@ dependencies = [
  "cfg-if 1.0.0",
  "crossbeam-utils",
  "lazy_static",
- "memoffset",
+ "memoffset 0.6.5",
  "scopeguard",
 ]
 
@@ -1028,6 +1224,16 @@ dependencies = [
 ]
 
 [[package]]
+name = "cstr_core"
+version = "0.2.6"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+checksum = "dd98742e4fdca832d40cab219dc2e3048de17d873248f83f17df47c1bea70956"
+dependencies = [
+ "cty",
+ "memchr",
+]
+
+[[package]]
 name = "ctor"
 version = "0.1.22"
 source = "registry+https://github.com/rust-lang/crates.io-index"
@@ -1036,6 +1242,12 @@ dependencies = [
  "quote",
  "syn",
 ]
+
+[[package]]
+name = "cty"
+version = "0.2.2"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+checksum = "b365fabc795046672053e29c954733ec3b05e4be654ab130fe8f1f94d7051f35"
 
 [[package]]
 name = "curl"
@@ -1075,6 +1287,17 @@ source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "a0afaad2b26fa326569eb264b1363e8ae3357618c43982b3f285f0774ce76b69"
 
 [[package]]
+name = "delegate"
+version = "0.6.2"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+checksum = "35c47a31748d9cfa641f6cccb3608385fafe261ba36054f3d40d5a3ca11eb1af"
+dependencies = [
+ "proc-macro2",
+ "quote",
+ "syn",
+]
+
+[[package]]
 name = "derive-new"
 version = "0.5.8"
 source = "registry+https://github.com/rust-lang/crates.io-index"
@@ -1095,6 +1318,11 @@ dependencies = [
  "quote",
  "syn",
 ]
+
+[[package]]
+name = "dfqueue"
+version = "0.1.0"
+source = "git+https://github.com/theseus-os/Theseus#74a81cf37654a666eb78e88cbc76fac585d97fb7"
 
 [[package]]
 name = "diff"
@@ -1213,12 +1441,33 @@ dependencies = [
 ]
 
 [[package]]
+name = "embedded-hal"
+version = "0.2.7"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+checksum = "35949884794ad573cf46071e41c9b60efb0cb311e3ca01f7af807af1debc66ff"
+dependencies = [
+ "nb 0.1.3",
+ "void",
+]
+
+[[package]]
 name = "ena"
 version = "0.14.0"
 source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "d7402b94a93c24e742487327a7cd839dc9d36fec9de9fb25b09f2dae459f36c3"
 dependencies = [
  "log",
+]
+
+[[package]]
+name = "entryflags_x86_64"
+version = "0.1.0"
+source = "git+https://github.com/theseus-os/Theseus#74a81cf37654a666eb78e88cbc76fac585d97fb7"
+dependencies = [
+ "bitflags",
+ "multiboot2",
+ "static_assertions",
+ "xmas-elf",
 ]
 
 [[package]]
@@ -1268,11 +1517,46 @@ dependencies = [
 ]
 
 [[package]]
+name = "environment"
+version = "0.1.0"
+source = "git+https://github.com/theseus-os/Theseus#74a81cf37654a666eb78e88cbc76fac585d97fb7"
+dependencies = [
+ "fs_node",
+ "hashbrown 0.11.2",
+ "root",
+]
+
+[[package]]
 name = "error_index_generator"
 version = "0.0.0"
 dependencies = [
  "rustdoc",
  "walkdir",
+]
+
+[[package]]
+name = "event_types"
+version = "0.1.0"
+source = "git+https://github.com/theseus-os/Theseus#74a81cf37654a666eb78e88cbc76fac585d97fb7"
+dependencies = [
+ "keycodes_ascii",
+ "mouse_data",
+ "shapes",
+]
+
+[[package]]
+name = "exceptions_early"
+version = "0.1.0"
+source = "git+https://github.com/theseus-os/Theseus#74a81cf37654a666eb78e88cbc76fac585d97fb7"
+dependencies = [
+ "gdt",
+ "locked_idt",
+ "memory",
+ "mod_mgmt",
+ "spin 0.9.4",
+ "tss",
+ "vga_buffer",
+ "x86_64",
 ]
 
 [[package]]
@@ -1291,6 +1575,17 @@ checksum = "ceb96f3eaa0d4e8769c52dacfd4eb60183b817ed2f176171b3c691d5022b0f2e"
 dependencies = [
  "difference",
  "once_cell",
+]
+
+[[package]]
+name = "external_unwind_info"
+version = "0.1.0"
+source = "git+https://github.com/theseus-os/Theseus#74a81cf37654a666eb78e88cbc76fac585d97fb7"
+dependencies = [
+ "lazy_static",
+ "log",
+ "memory",
+ "spin 0.9.4",
 ]
 
 [[package]]
@@ -1314,6 +1609,21 @@ name = "fallible-iterator"
 version = "0.2.0"
 source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "4443176a9f2c162692bd3d352d745ef9413eec5782a80d8fd6f8a1ac692a07f7"
+
+[[package]]
+name = "fault_log"
+version = "0.1.0"
+source = "git+https://github.com/theseus-os/Theseus#74a81cf37654a666eb78e88cbc76fac585d97fb7"
+dependencies = [
+ "apic",
+ "irq_safety",
+ "lazy_static",
+ "log",
+ "memory",
+ "print",
+ "task",
+ "vga_buffer",
+]
 
 [[package]]
 name = "filetime"
@@ -1422,6 +1732,20 @@ dependencies = [
 ]
 
 [[package]]
+name = "frame_allocator"
+version = "0.1.0"
+source = "git+https://github.com/theseus-os/Theseus#74a81cf37654a666eb78e88cbc76fac585d97fb7"
+dependencies = [
+ "intrusive-collections",
+ "kernel_config",
+ "log",
+ "memory_structs",
+ "page_table_entry",
+ "spin 0.9.4",
+ "static_assertions",
+]
+
+[[package]]
 name = "fs-err"
 version = "2.5.0"
 source = "registry+https://github.com/rust-lang/crates.io-index"
@@ -1432,6 +1756,18 @@ name = "fs_extra"
 version = "1.1.0"
 source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "5f2a4a2034423744d2cc7ca2068453168dcdb82c438419e639a26bd87839c674"
+
+[[package]]
+name = "fs_node"
+version = "0.1.0"
+source = "git+https://github.com/theseus-os/Theseus#74a81cf37654a666eb78e88cbc76fac585d97fb7"
+dependencies = [
+ "io",
+ "lazy_static",
+ "log",
+ "memory",
+ "spin 0.9.4",
+]
 
 [[package]]
 name = "fst"
@@ -1557,6 +1893,22 @@ dependencies = [
 ]
 
 [[package]]
+name = "gdt"
+version = "0.1.0"
+source = "git+https://github.com/theseus-os/Theseus#74a81cf37654a666eb78e88cbc76fac585d97fb7"
+dependencies = [
+ "atomic_linked_list",
+ "bit_field 0.7.0",
+ "bitflags",
+ "lazy_static",
+ "log",
+ "memory",
+ "spin 0.9.4",
+ "tss",
+ "x86_64",
+]
+
+[[package]]
 name = "generic-array"
 version = "0.12.4"
 source = "registry+https://github.com/rust-lang/crates.io-index"
@@ -1639,7 +1991,7 @@ checksum = "78cc372d058dcf6d5ecd98510e7fbc9e5aec4d21de70f65fea8fecebcd881bd4"
 dependencies = [
  "fallible-iterator",
  "indexmap",
- "stable_deref_trait",
+ "stable_deref_trait 1.2.0",
 ]
 
 [[package]]
@@ -1689,6 +2041,16 @@ dependencies = [
 ]
 
 [[package]]
+name = "goblin"
+version = "0.0.19"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+checksum = "c65cd533b33e3d04c6e393225fa8919ddfcf5862ca8919c7f9a167c312ef41c2"
+dependencies = [
+ "plain",
+ "scroll",
+]
+
+[[package]]
 name = "gsgdt"
 version = "0.1.2"
 source = "registry+https://github.com/rust-lang/crates.io-index"
@@ -1718,6 +2080,7 @@ source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "ab5ef0d4909ef3724cc8cce6ccc8572c5c817592e9285f5464f8e86f8bd3726e"
 dependencies = [
  "ahash",
+ "serde",
 ]
 
 [[package]]
@@ -1730,6 +2093,19 @@ dependencies = [
  "compiler_builtins",
  "rustc-std-workspace-alloc",
  "rustc-std-workspace-core",
+]
+
+[[package]]
+name = "heap"
+version = "0.1.0"
+source = "git+https://github.com/theseus-os/Theseus#74a81cf37654a666eb78e88cbc76fac585d97fb7"
+dependencies = [
+ "block_allocator",
+ "irq_safety",
+ "kernel_config",
+ "log",
+ "memory",
+ "spin 0.9.4",
 ]
 
 [[package]]
@@ -1929,6 +2305,36 @@ dependencies = [
 ]
 
 [[package]]
+name = "interrupts"
+version = "0.1.0"
+source = "git+https://github.com/theseus-os/Theseus#74a81cf37654a666eb78e88cbc76fac585d97fb7"
+dependencies = [
+ "apic",
+ "exceptions_early",
+ "gdt",
+ "irq_safety",
+ "kernel_config",
+ "keyboard",
+ "lazy_static",
+ "locked_idt",
+ "log",
+ "memory",
+ "mouse",
+ "pic",
+ "pit_clock",
+ "port_io",
+ "ps2",
+ "scheduler",
+ "sleep",
+ "spin 0.9.4",
+ "task",
+ "tlb_shootdown",
+ "tss",
+ "vga_buffer",
+ "x86_64",
+]
+
+[[package]]
 name = "intl-memoizer"
 version = "0.5.1"
 source = "registry+https://github.com/rust-lang/crates.io-index"
@@ -1946,6 +2352,48 @@ checksum = "b18f988384267d7066cc2be425e6faf352900652c046b6971d2e228d3b1c5ecf"
 dependencies = [
  "tinystr",
  "unic-langid",
+]
+
+[[package]]
+name = "intrusive-collections"
+version = "0.9.4"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+checksum = "bfe531a7789d7120f3e17d4f3f2cd95f54418ba7354f60b7b622b6644a07888a"
+dependencies = [
+ "memoffset 0.5.6",
+]
+
+[[package]]
+name = "io"
+version = "0.1.0"
+source = "git+https://github.com/theseus-os/Theseus#74a81cf37654a666eb78e88cbc76fac585d97fb7"
+dependencies = [
+ "core2",
+ "delegate",
+ "lazy_static",
+ "lockable",
+ "log",
+ "spin 0.9.4",
+]
+
+[[package]]
+name = "irq_safety"
+version = "0.1.1"
+source = "git+https://github.com/theseus-os/irq_safety#d6be450ef6487052e5b6b174d679b77f26f93b48"
+dependencies = [
+ "cortex-m",
+ "owning_ref",
+ "spin 0.9.4",
+ "stable_deref_trait 1.1.1",
+]
+
+[[package]]
+name = "itertools"
+version = "0.7.11"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+checksum = "0d47946d458e94a1b7bcabbf6521ea7c037062c81f534615abcad76e84d4970d"
+dependencies = [
+ "either",
 ]
 
 [[package]]
@@ -2120,6 +2568,32 @@ dependencies = [
 ]
 
 [[package]]
+name = "kernel_config"
+version = "0.1.0"
+source = "git+https://github.com/theseus-os/Theseus#74a81cf37654a666eb78e88cbc76fac585d97fb7"
+
+[[package]]
+name = "keyboard"
+version = "0.1.0"
+source = "git+https://github.com/theseus-os/Theseus#74a81cf37654a666eb78e88cbc76fac585d97fb7"
+dependencies = [
+ "event_types",
+ "keycodes_ascii",
+ "log",
+ "mpmc",
+ "ps2",
+ "spin 0.9.4",
+]
+
+[[package]]
+name = "keycodes_ascii"
+version = "0.1.0"
+source = "git+https://github.com/theseus-os/Theseus#74a81cf37654a666eb78e88cbc76fac585d97fb7"
+dependencies = [
+ "bitflags",
+]
+
+[[package]]
 name = "kstring"
 version = "2.0.0"
 source = "registry+https://github.com/rust-lang/crates.io-index"
@@ -2133,6 +2607,9 @@ name = "lazy_static"
 version = "1.4.0"
 source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "e2abad23fbc42b3700f2f279844dc832adb2b2eb069b2df918f455c4e18cc646"
+dependencies = [
+ "spin 0.5.2",
+]
 
 [[package]]
 name = "lazycell"
@@ -2204,6 +2681,16 @@ dependencies = [
 ]
 
 [[package]]
+name = "libtheseus"
+version = "0.1.0"
+source = "git+https://github.com/theseus-os/Theseus#74a81cf37654a666eb78e88cbc76fac585d97fb7"
+dependencies = [
+ "heap",
+ "logger",
+ "panic_entry",
+]
+
+[[package]]
 name = "libz-sys"
 version = "1.1.3"
 source = "registry+https://github.com/rust-lang/crates.io-index"
@@ -2230,6 +2717,12 @@ source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "7fb9b38af92608140b86b693604b9ffcc5824240a484d1ecd4795bacb2fe88f3"
 
 [[package]]
+name = "linked_list_allocator"
+version = "0.9.1"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+checksum = "549ce1740e46b291953c4340adcd74c59bcf4308f4cac050fd33ba91b7168f4a"
+
+[[package]]
 name = "lint-docs"
 version = "0.1.0"
 dependencies = [
@@ -2253,12 +2746,41 @@ dependencies = [
 ]
 
 [[package]]
+name = "lockable"
+version = "0.1.0"
+source = "git+https://github.com/theseus-os/Theseus#74a81cf37654a666eb78e88cbc76fac585d97fb7"
+dependencies = [
+ "irq_safety",
+ "spin 0.9.4",
+]
+
+[[package]]
+name = "locked_idt"
+version = "0.1.0"
+source = "git+https://github.com/theseus-os/Theseus#74a81cf37654a666eb78e88cbc76fac585d97fb7"
+dependencies = [
+ "irq_safety",
+ "x86_64",
+]
+
+[[package]]
 name = "log"
 version = "0.4.14"
 source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "51b9bbe6c47d51fc3e1a9b945965946b4c44142ab8792c50835a980d362c2710"
 dependencies = [
  "cfg-if 1.0.0",
+]
+
+[[package]]
+name = "logger"
+version = "0.1.0"
+source = "git+https://github.com/theseus-os/Theseus#74a81cf37654a666eb78e88cbc76fac585d97fb7"
+dependencies = [
+ "irq_safety",
+ "log",
+ "serial_port_basic",
+ "spin 0.9.4",
 ]
 
 [[package]]
@@ -2399,6 +2921,19 @@ dependencies = [
 ]
 
 [[package]]
+name = "memfs"
+version = "0.1.0"
+source = "git+https://github.com/theseus-os/Theseus#74a81cf37654a666eb78e88cbc76fac585d97fb7"
+dependencies = [
+ "fs_node",
+ "io",
+ "irq_safety",
+ "log",
+ "memory",
+ "spin 0.9.4",
+]
+
+[[package]]
 name = "memmap2"
 version = "0.2.1"
 source = "registry+https://github.com/rust-lang/crates.io-index"
@@ -2409,11 +2944,72 @@ dependencies = [
 
 [[package]]
 name = "memoffset"
+version = "0.5.6"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+checksum = "043175f069eda7b85febe4a74abbaeff828d9f8b448515d3151a14a3542811aa"
+dependencies = [
+ "autocfg",
+]
+
+[[package]]
+name = "memoffset"
 version = "0.6.5"
 source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "5aa361d4faea93603064a027415f07bd8e1d5c88c9fbf68bf56a285428fd79ce"
 dependencies = [
  "autocfg",
+]
+
+[[package]]
+name = "memory"
+version = "0.1.0"
+source = "git+https://github.com/theseus-os/Theseus#74a81cf37654a666eb78e88cbc76fac585d97fb7"
+dependencies = [
+ "atomic_linked_list",
+ "bit_field 0.7.0",
+ "bitflags",
+ "frame_allocator",
+ "irq_safety",
+ "kernel_config",
+ "lazy_static",
+ "log",
+ "memory_structs",
+ "memory_x86_64",
+ "multiboot2",
+ "page_allocator",
+ "page_table_entry",
+ "spin 0.9.4",
+ "x86_64",
+ "xmas-elf",
+ "zerocopy",
+]
+
+[[package]]
+name = "memory_structs"
+version = "0.1.0"
+source = "git+https://github.com/theseus-os/Theseus#74a81cf37654a666eb78e88cbc76fac585d97fb7"
+dependencies = [
+ "bit_field 0.7.0",
+ "derive_more",
+ "entryflags_x86_64",
+ "kernel_config",
+ "multiboot2",
+ "paste",
+ "xmas-elf",
+ "zerocopy",
+]
+
+[[package]]
+name = "memory_x86_64"
+version = "0.1.0"
+source = "git+https://github.com/theseus-os/Theseus#74a81cf37654a666eb78e88cbc76fac585d97fb7"
+dependencies = [
+ "entryflags_x86_64",
+ "kernel_config",
+ "log",
+ "memory_structs",
+ "multiboot2",
+ "x86_64",
 ]
 
 [[package]]
@@ -2489,6 +3085,90 @@ dependencies = [
  "smallvec",
  "ui_test",
 ]
+
+[[package]]
+name = "mod_mgmt"
+version = "0.1.0"
+source = "git+https://github.com/theseus-os/Theseus#74a81cf37654a666eb78e88cbc76fac585d97fb7"
+dependencies = [
+ "bincode",
+ "bootloader_modules",
+ "const_format",
+ "cow_arc",
+ "crate_metadata",
+ "crate_name_utils",
+ "cstr_core",
+ "fs_node",
+ "hashbrown 0.11.2",
+ "kernel_config",
+ "lazy_static",
+ "log",
+ "memfs",
+ "memory",
+ "path",
+ "qp-trie",
+ "rangemap",
+ "root",
+ "rustc-demangle",
+ "serde",
+ "spin 0.9.4",
+ "util",
+ "vfs_node",
+ "xmas-elf",
+]
+
+[[package]]
+name = "mouse"
+version = "0.1.0"
+source = "git+https://github.com/theseus-os/Theseus#74a81cf37654a666eb78e88cbc76fac585d97fb7"
+dependencies = [
+ "event_types",
+ "log",
+ "mouse_data",
+ "mpmc",
+ "ps2",
+ "spin 0.9.4",
+]
+
+[[package]]
+name = "mouse_data"
+version = "0.1.0"
+source = "git+https://github.com/theseus-os/Theseus#74a81cf37654a666eb78e88cbc76fac585d97fb7"
+
+[[package]]
+name = "mpmc"
+version = "0.1.6"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+checksum = "bf78b1242a953be96e01b5f8ed8ffdfc8055c0a2b779899b3835e5d27a69dced"
+
+[[package]]
+name = "msr"
+version = "0.1.0"
+source = "git+https://github.com/theseus-os/Theseus#74a81cf37654a666eb78e88cbc76fac585d97fb7"
+
+[[package]]
+name = "multiboot2"
+version = "0.14.0"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+checksum = "e6170b6f12ea75d8d0f5621e3ed780b041a666c4a5b904c77261fe343d0e798d"
+dependencies = [
+ "bitflags",
+]
+
+[[package]]
+name = "nb"
+version = "0.1.3"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+checksum = "801d31da0513b6ec5214e9bf433a77966320625a37860f910be265be6e18d06f"
+dependencies = [
+ "nb 1.0.0",
+]
+
+[[package]]
+name = "nb"
+version = "1.0.0"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+checksum = "546c37ac5d9e56f55e73b677106873d9d9f5190605e41a856503623648488cae"
 
 [[package]]
 name = "new_debug_unreachable"
@@ -2695,6 +3375,15 @@ dependencies = [
 ]
 
 [[package]]
+name = "owning_ref"
+version = "0.4.1"
+source = "git+https://github.com/theseus-os/owning-ref-rs#0d2dcdcffd75b80157d0e72fb82593a8696a9c49"
+dependencies = [
+ "spin 0.9.4",
+ "stable_deref_trait 1.1.1",
+]
+
+[[package]]
 name = "owo-colors"
 version = "3.4.0"
 source = "registry+https://github.com/rust-lang/crates.io-index"
@@ -2711,6 +3400,30 @@ dependencies = [
 ]
 
 [[package]]
+name = "page_allocator"
+version = "0.1.0"
+source = "git+https://github.com/theseus-os/Theseus#74a81cf37654a666eb78e88cbc76fac585d97fb7"
+dependencies = [
+ "intrusive-collections",
+ "kernel_config",
+ "log",
+ "memory_structs",
+ "spin 0.9.4",
+ "static_assertions",
+]
+
+[[package]]
+name = "page_table_entry"
+version = "0.1.0"
+source = "git+https://github.com/theseus-os/Theseus#74a81cf37654a666eb78e88cbc76fac585d97fb7"
+dependencies = [
+ "bit_field 0.7.0",
+ "kernel_config",
+ "memory_structs",
+ "zerocopy",
+]
+
+[[package]]
 name = "panic_abort"
 version = "0.0.0"
 dependencies = [
@@ -2722,6 +3435,19 @@ dependencies = [
 ]
 
 [[package]]
+name = "panic_entry"
+version = "0.1.0"
+source = "git+https://github.com/theseus-os/Theseus#74a81cf37654a666eb78e88cbc76fac585d97fb7"
+dependencies = [
+ "log",
+ "memory",
+ "mod_mgmt",
+ "panic_wrapper",
+ "unwind 0.1.0",
+ "vga_buffer",
+]
+
+[[package]]
 name = "panic_unwind"
 version = "0.0.0"
 dependencies = [
@@ -2730,7 +3456,23 @@ dependencies = [
  "compiler_builtins",
  "core",
  "libc",
- "unwind",
+ "unwind 0.0.0",
+]
+
+[[package]]
+name = "panic_wrapper"
+version = "0.1.0"
+source = "git+https://github.com/theseus-os/Theseus#74a81cf37654a666eb78e88cbc76fac585d97fb7"
+dependencies = [
+ "fault_log",
+ "log",
+ "memory",
+ "mod_mgmt",
+ "runqueue",
+ "stack_trace",
+ "stack_trace_frame_pointers",
+ "task",
+ "unwind 0.1.0",
 ]
 
 [[package]]
@@ -2796,10 +3538,34 @@ dependencies = [
 ]
 
 [[package]]
+name = "paste"
+version = "1.0.7"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+checksum = "0c520e05135d6e763148b6426a837e239041653ba7becd2e538c076c738025fc"
+
+[[package]]
+name = "path"
+version = "0.1.0"
+source = "git+https://github.com/theseus-os/Theseus#74a81cf37654a666eb78e88cbc76fac585d97fb7"
+dependencies = [
+ "fs_node",
+ "lazy_static",
+ "log",
+ "root",
+ "spin 0.9.4",
+ "vfs_node",
+]
+
+[[package]]
 name = "pathdiff"
 version = "0.2.1"
 source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "8835116a5c179084a830efb3adc117ab007512b535bc1a21c991d3b32a6b44dd"
+
+[[package]]
+name = "pause"
+version = "0.1.0"
+source = "git+https://github.com/theseus-os/Theseus#74a81cf37654a666eb78e88cbc76fac585d97fb7"
 
 [[package]]
 name = "percent-encoding"
@@ -2914,6 +3680,15 @@ dependencies = [
 ]
 
 [[package]]
+name = "pic"
+version = "0.1.0"
+source = "git+https://github.com/theseus-os/Theseus#74a81cf37654a666eb78e88cbc76fac585d97fb7"
+dependencies = [
+ "log",
+ "port_io",
+]
+
+[[package]]
 name = "pin-project-lite"
 version = "0.2.8"
 source = "registry+https://github.com/rust-lang/crates.io-index"
@@ -2926,10 +3701,26 @@ source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "8b870d8c151b6f2fb93e84a13146138f05d02ed11c7e7c54f8826aaaf7c9f184"
 
 [[package]]
+name = "pit_clock"
+version = "0.1.0"
+source = "git+https://github.com/theseus-os/Theseus#74a81cf37654a666eb78e88cbc76fac585d97fb7"
+dependencies = [
+ "log",
+ "port_io",
+ "spin 0.9.4",
+]
+
+[[package]]
 name = "pkg-config"
 version = "0.3.18"
 source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "d36492546b6af1463394d46f0c834346f31548646f6ba10849802c9c9a27ac33"
+
+[[package]]
+name = "plain"
+version = "0.2.3"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+checksum = "b4596b6d070b27117e987119b4dac604f3c58cfb0b191112e24771b2faeac1a6"
 
 [[package]]
 name = "polonius-engine"
@@ -2941,6 +3732,11 @@ dependencies = [
  "log",
  "rustc-hash",
 ]
+
+[[package]]
+name = "port_io"
+version = "0.2.1"
+source = "git+https://github.com/theseus-os/Theseus#74a81cf37654a666eb78e88cbc76fac585d97fb7"
 
 [[package]]
 name = "ppv-lite86"
@@ -2974,6 +3770,17 @@ checksum = "926d36b9553851b8b0005f1275891b392ee4d2d833852c417ed025477350fb9d"
 dependencies = [
  "env_logger 0.7.1",
  "log",
+]
+
+[[package]]
+name = "print"
+version = "0.1.0"
+source = "git+https://github.com/theseus-os/Theseus#74a81cf37654a666eb78e88cbc76fac585d97fb7"
+dependencies = [
+ "dfqueue",
+ "event_types",
+ "log",
+ "spin 0.9.4",
 ]
 
 [[package]]
@@ -3042,6 +3849,16 @@ dependencies = [
 ]
 
 [[package]]
+name = "ps2"
+version = "0.1.0"
+source = "git+https://github.com/theseus-os/Theseus#74a81cf37654a666eb78e88cbc76fac585d97fb7"
+dependencies = [
+ "log",
+ "port_io",
+ "spin 0.9.4",
+]
+
+[[package]]
 name = "psm"
 version = "0.1.16"
 source = "registry+https://github.com/rust-lang/crates.io-index"
@@ -3066,6 +3883,16 @@ name = "punycode"
 version = "0.4.1"
 source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "e9e1dcb320d6839f6edb64f7a4a59d39b30480d4d1765b56873f7c858538a5fe"
+
+[[package]]
+name = "qp-trie"
+version = "0.8.0"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+checksum = "a075ecba64154fed5429568c9c6a0e0eccc3276209e93e6133206413ea6834b4"
+dependencies = [
+ "new_debug_unreachable",
+ "unreachable",
+]
 
 [[package]]
 name = "quick-error"
@@ -3224,6 +4051,23 @@ dependencies = [
 ]
 
 [[package]]
+name = "rangemap"
+version = "0.1.14"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+checksum = "3929836cb64d09ee7deee59635c3d9bffbc1c0373e247efff6272abd62a11baa"
+
+[[package]]
+name = "raw-cpuid"
+version = "7.0.4"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+checksum = "beb71f708fe39b2c5e98076204c3cc094ee5a4c12c4cdb119a2b72dc34164f41"
+dependencies = [
+ "bitflags",
+ "cc",
+ "rustc_version 0.2.3",
+]
+
+[[package]]
 name = "rayon"
 version = "1.5.3"
 source = "registry+https://github.com/rust-lang/crates.io-index"
@@ -3324,7 +4168,7 @@ dependencies = [
  "futures 0.3.19",
  "heck",
  "home",
- "itertools",
+ "itertools 0.10.1",
  "jsonrpc-core",
  "lazy_static",
  "log",
@@ -3366,7 +4210,7 @@ dependencies = [
  "derive-new",
  "env_logger 0.9.0",
  "fst",
- "itertools",
+ "itertools 0.10.1",
  "json",
  "lazy_static",
  "log",
@@ -3430,6 +4274,72 @@ checksum = "ce4b57b25b4330ed5ec14028fc02141e083ddafda327e7eb598dc0569c8c83c9"
 dependencies = [
  "log",
  "rls-span",
+]
+
+[[package]]
+name = "root"
+version = "0.1.0"
+source = "git+https://github.com/theseus-os/Theseus#74a81cf37654a666eb78e88cbc76fac585d97fb7"
+dependencies = [
+ "fs_node",
+ "lazy_static",
+ "log",
+ "spin 0.9.4",
+]
+
+[[package]]
+name = "runqueue"
+version = "0.1.0"
+source = "git+https://github.com/theseus-os/Theseus#74a81cf37654a666eb78e88cbc76fac585d97fb7"
+dependencies = [
+ "atomic_linked_list",
+ "cfg-if 1.0.0",
+ "irq_safety",
+ "lazy_static",
+ "log",
+ "runqueue_priority",
+ "runqueue_realtime",
+ "runqueue_round_robin",
+ "single_simd_task_optimization",
+ "task",
+]
+
+[[package]]
+name = "runqueue_priority"
+version = "0.1.0"
+source = "git+https://github.com/theseus-os/Theseus#74a81cf37654a666eb78e88cbc76fac585d97fb7"
+dependencies = [
+ "atomic_linked_list",
+ "irq_safety",
+ "lazy_static",
+ "log",
+ "single_simd_task_optimization",
+ "task",
+]
+
+[[package]]
+name = "runqueue_realtime"
+version = "0.1.0"
+source = "git+https://github.com/theseus-os/Theseus#74a81cf37654a666eb78e88cbc76fac585d97fb7"
+dependencies = [
+ "atomic_linked_list",
+ "irq_safety",
+ "lazy_static",
+ "log",
+ "task",
+]
+
+[[package]]
+name = "runqueue_round_robin"
+version = "0.1.0"
+source = "git+https://github.com/theseus-os/Theseus#74a81cf37654a666eb78e88cbc76fac585d97fb7"
+dependencies = [
+ "atomic_linked_list",
+ "irq_safety",
+ "lazy_static",
+ "log",
+ "single_simd_task_optimization",
+ "task",
 ]
 
 [[package]]
@@ -3602,7 +4512,7 @@ dependencies = [
 name = "rustc_ast_passes"
 version = "0.0.0"
 dependencies = [
- "itertools",
+ "itertools 0.10.1",
  "rustc_ast",
  "rustc_ast_pretty",
  "rustc_attr",
@@ -3645,7 +4555,7 @@ name = "rustc_borrowck"
 version = "0.0.0"
 dependencies = [
  "either",
- "itertools",
+ "itertools 0.10.1",
  "polonius-engine",
  "rustc_const_eval",
  "rustc_data_structures",
@@ -3729,7 +4639,7 @@ version = "0.0.0"
 dependencies = [
  "bitflags",
  "cc",
- "itertools",
+ "itertools 0.10.1",
  "jobserver",
  "libc",
  "object 0.29.0",
@@ -3809,7 +4719,7 @@ dependencies = [
  "rustc_macros",
  "rustc_serialize",
  "smallvec",
- "stable_deref_trait",
+ "stable_deref_trait 1.2.0",
  "stacker",
  "tempfile",
  "tracing",
@@ -4240,7 +5150,7 @@ name = "rustc_mir_transform"
 version = "0.0.0"
 dependencies = [
  "coverage_test_macros",
- "itertools",
+ "itertools 0.10.1",
  "rustc_ast",
  "rustc_attr",
  "rustc_const_eval",
@@ -4304,7 +5214,7 @@ dependencies = [
 name = "rustc_passes"
 version = "0.0.0"
 dependencies = [
- "itertools",
+ "itertools 0.10.1",
  "rustc_ast",
  "rustc_ast_pretty",
  "rustc_attr",
@@ -4644,11 +5554,20 @@ dependencies = [
 
 [[package]]
 name = "rustc_version"
+version = "0.2.3"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+checksum = "138e3e0acb6c9fb258b19b67cb8abd63c00679d2851805ea151465464fe9030a"
+dependencies = [
+ "semver 0.9.0",
+]
+
+[[package]]
+name = "rustc_version"
 version = "0.4.0"
 source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "bfa0f585226d2e68097d4f95d113b15b83a82e819ab25717ec0590d9584ef366"
 dependencies = [
- "semver",
+ "semver 1.0.3",
 ]
 
 [[package]]
@@ -4659,7 +5578,7 @@ dependencies = [
  "askama",
  "atty",
  "expect-test",
- "itertools",
+ "itertools 0.10.1",
  "minifier",
  "once_cell",
  "pulldown-cmark",
@@ -4731,7 +5650,7 @@ dependencies = [
  "env_logger 0.9.0",
  "getopts",
  "ignore",
- "itertools",
+ "itertools 0.10.1",
  "lazy_static",
  "log",
  "regex",
@@ -4779,6 +5698,57 @@ dependencies = [
 ]
 
 [[package]]
+name = "scheduler"
+version = "0.1.0"
+source = "git+https://github.com/theseus-os/Theseus#74a81cf37654a666eb78e88cbc76fac585d97fb7"
+dependencies = [
+ "apic",
+ "cfg-if 1.0.0",
+ "irq_safety",
+ "log",
+ "runqueue",
+ "scheduler_priority",
+ "scheduler_realtime",
+ "scheduler_round_robin",
+ "spin 0.9.4",
+ "task",
+]
+
+[[package]]
+name = "scheduler_priority"
+version = "0.1.0"
+source = "git+https://github.com/theseus-os/Theseus#74a81cf37654a666eb78e88cbc76fac585d97fb7"
+dependencies = [
+ "log",
+ "runqueue",
+ "runqueue_priority",
+ "spin 0.9.4",
+ "task",
+]
+
+[[package]]
+name = "scheduler_realtime"
+version = "0.1.0"
+source = "git+https://github.com/theseus-os/Theseus#74a81cf37654a666eb78e88cbc76fac585d97fb7"
+dependencies = [
+ "log",
+ "runqueue_realtime",
+ "task",
+]
+
+[[package]]
+name = "scheduler_round_robin"
+version = "0.1.0"
+source = "git+https://github.com/theseus-os/Theseus#74a81cf37654a666eb78e88cbc76fac585d97fb7"
+dependencies = [
+ "log",
+ "runqueue",
+ "runqueue_round_robin",
+ "spin 0.9.4",
+ "task",
+]
+
+[[package]]
 name = "scoped-tls"
 version = "1.0.0"
 source = "registry+https://github.com/rust-lang/crates.io-index"
@@ -4789,6 +5759,15 @@ name = "scopeguard"
 version = "1.1.0"
 source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "d29ab0c6d3fc0ee92fe66e2d99f700eab17a8d57d1c1d3b748380fb20baa78cd"
+
+[[package]]
+name = "scroll"
+version = "0.9.2"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+checksum = "2f84d114ef17fd144153d608fba7c446b0145d038985e7a8cc5d08bb0ce20383"
+dependencies = [
+ "rustc_version 0.2.3",
+]
 
 [[package]]
 name = "security-framework"
@@ -4821,6 +5800,15 @@ checksum = "1ef965a420fe14fdac7dd018862966a4c14094f900e1650bbc71ddd7d580c8af"
 
 [[package]]
 name = "semver"
+version = "0.9.0"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+checksum = "1d7eb9ef2c18661902cc47e535f9bc51b78acd254da71d375c2f6720d9a40403"
+dependencies = [
+ "semver-parser",
+]
+
+[[package]]
+name = "semver"
 version = "1.0.3"
 source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "5f3aac57ee7f3272d8395c6e4f502f434f0e289fcd62876f70daa008c20dcabe"
@@ -4829,19 +5817,25 @@ dependencies = [
 ]
 
 [[package]]
-name = "serde"
-version = "1.0.125"
+name = "semver-parser"
+version = "0.7.0"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "558dc50e1a5a5fa7112ca2ce4effcb321b0300c0d4ccf0776a9f60cd89031171"
+checksum = "388a1df253eca08550bef6c72392cfe7c30914bf41df5269b68cbd6ff8f570a3"
+
+[[package]]
+name = "serde"
+version = "1.0.140"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+checksum = "fc855a42c7967b7c369eb5860f7164ef1f6f81c20c7cc1141f2a604e18723b03"
 dependencies = [
  "serde_derive",
 ]
 
 [[package]]
 name = "serde_derive"
-version = "1.0.125"
+version = "1.0.140"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "b093b7a2bb58203b5da3056c05b4ec1fed827dcfdb37347a8841695263b3d06d"
+checksum = "6f2122636b9fe3b81f1cb25099fcf2d3f542cdb1d45940d56c713158884a05da"
 dependencies = [
  "proc-macro2",
  "quote",
@@ -4881,6 +5875,16 @@ dependencies = [
 ]
 
 [[package]]
+name = "serial_port_basic"
+version = "0.1.0"
+source = "git+https://github.com/theseus-os/Theseus#74a81cf37654a666eb78e88cbc76fac585d97fb7"
+dependencies = [
+ "irq_safety",
+ "port_io",
+ "spin 0.9.4",
+]
+
+[[package]]
 name = "sha-1"
 version = "0.8.2"
 source = "registry+https://github.com/rust-lang/crates.io-index"
@@ -4913,6 +5917,11 @@ dependencies = [
  "cpufeatures",
  "digest 0.10.2",
 ]
+
+[[package]]
+name = "shapes"
+version = "0.1.0"
+source = "git+https://github.com/theseus-os/Theseus#74a81cf37654a666eb78e88cbc76fac585d97fb7"
 
 [[package]]
 name = "sharded-slab"
@@ -4951,6 +5960,16 @@ source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "2e24979f63a11545f5f2c60141afe249d4f19f84581ea2138065e400941d83d3"
 
 [[package]]
+name = "single_simd_task_optimization"
+version = "0.1.0"
+source = "git+https://github.com/theseus-os/Theseus#74a81cf37654a666eb78e88cbc76fac585d97fb7"
+dependencies = [
+ "cfg-if 0.1.10",
+ "log",
+ "task",
+]
+
+[[package]]
 name = "siphasher"
 version = "0.3.3"
 source = "registry+https://github.com/rust-lang/crates.io-index"
@@ -4971,6 +5990,17 @@ name = "slab"
 version = "0.4.2"
 source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "c111b5bd5695e56cffe5129854aa230b39c93a305372fdbb2668ca2394eea9f8"
+
+[[package]]
+name = "sleep"
+version = "0.1.0"
+source = "git+https://github.com/theseus-os/Theseus#74a81cf37654a666eb78e88cbc76fac585d97fb7"
+dependencies = [
+ "irq_safety",
+ "lazy_static",
+ "scheduler",
+ "task",
+]
 
 [[package]]
 name = "smallvec"
@@ -5019,10 +6049,67 @@ dependencies = [
 ]
 
 [[package]]
+name = "spin"
+version = "0.5.2"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+checksum = "6e63cff320ae2c57904679ba7cb63280a3dc4613885beafb148ee7bf9aa9042d"
+
+[[package]]
+name = "spin"
+version = "0.9.4"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+checksum = "7f6002a767bff9e83f8eeecf883ecb8011875a21ae8da43bffb817a57e78cc09"
+dependencies = [
+ "lock_api",
+]
+
+[[package]]
+name = "stable_deref_trait"
+version = "1.1.1"
+source = "git+https://github.com/theseus-os/stable_deref_trait.git?branch=spin#e006c79280042e27c4f16c7d29633eb2273752ee"
+dependencies = [
+ "spin 0.9.4",
+]
+
+[[package]]
 name = "stable_deref_trait"
 version = "1.2.0"
 source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "a8f112729512f8e442d81f95a8a7ddf2b7c6b8a1a6f509a95864142b30cab2d3"
+
+[[package]]
+name = "stack"
+version = "0.1.0"
+source = "git+https://github.com/theseus-os/Theseus#74a81cf37654a666eb78e88cbc76fac585d97fb7"
+dependencies = [
+ "kernel_config",
+ "log",
+ "memory",
+ "memory_structs",
+ "page_allocator",
+ "spin 0.9.4",
+]
+
+[[package]]
+name = "stack_trace"
+version = "0.1.0"
+source = "git+https://github.com/theseus-os/Theseus#74a81cf37654a666eb78e88cbc76fac585d97fb7"
+dependencies = [
+ "fallible-iterator",
+ "log",
+ "mod_mgmt",
+ "task",
+ "unwind 0.1.0",
+]
+
+[[package]]
+name = "stack_trace_frame_pointers"
+version = "0.1.0"
+source = "git+https://github.com/theseus-os/Theseus#74a81cf37654a666eb78e88cbc76fac585d97fb7"
+dependencies = [
+ "cfg-if 0.1.10",
+ "memory",
+]
 
 [[package]]
 name = "stacker"
@@ -5057,6 +6144,7 @@ dependencies = [
  "hashbrown 0.12.0",
  "hermit-abi 0.2.0",
  "libc",
+ "libtheseus",
  "miniz_oxide 0.4.0",
  "object 0.26.2",
  "panic_abort",
@@ -5065,7 +6153,7 @@ dependencies = [
  "rand 0.7.3",
  "rustc-demangle",
  "std_detect",
- "unwind",
+ "unwind 0.0.0",
  "wasi 0.11.0+wasi-snapshot-preview1",
 ]
 
@@ -5079,6 +6167,11 @@ dependencies = [
  "rustc-std-workspace-alloc",
  "rustc-std-workspace-core",
 ]
+
+[[package]]
+name = "str_ref"
+version = "0.1.0"
+source = "git+https://github.com/theseus-os/Theseus#74a81cf37654a666eb78e88cbc76fac585d97fb7"
 
 [[package]]
 name = "string_cache"
@@ -5153,6 +6246,28 @@ dependencies = [
  "filetime",
  "libc",
  "xattr",
+]
+
+[[package]]
+name = "task"
+version = "0.1.0"
+source = "git+https://github.com/theseus-os/Theseus#74a81cf37654a666eb78e88cbc76fac585d97fb7"
+dependencies = [
+ "context_switch",
+ "crossbeam-utils",
+ "environment",
+ "irq_safety",
+ "kernel_config",
+ "lazy_static",
+ "log",
+ "memory",
+ "mod_mgmt",
+ "root",
+ "spin 0.9.4",
+ "stack",
+ "static_assertions",
+ "tss",
+ "x86_64",
 ]
 
 [[package]]
@@ -5322,6 +6437,19 @@ source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "238ce071d267c5710f9d31451efec16c5ee22de34df17cc05e56cbc92e967117"
 
 [[package]]
+name = "tlb_shootdown"
+version = "0.1.0"
+source = "git+https://github.com/theseus-os/Theseus#74a81cf37654a666eb78e88cbc76fac585d97fb7"
+dependencies = [
+ "apic",
+ "irq_safety",
+ "log",
+ "memory",
+ "pause",
+ "x86_64",
+]
+
+[[package]]
 name = "tokio"
 version = "1.8.4"
 source = "registry+https://github.com/rust-lang/crates.io-index"
@@ -5381,7 +6509,7 @@ checksum = "ba98375fd631b83696f87c64e4ed8e29e6a1f3404d6aed95fa95163bad38e705"
 dependencies = [
  "combine",
  "indexmap",
- "itertools",
+ "itertools 0.10.1",
  "kstring",
  "serde",
 ]
@@ -5484,6 +6612,20 @@ dependencies = [
 ]
 
 [[package]]
+name = "tss"
+version = "0.1.0"
+source = "git+https://github.com/theseus-os/Theseus#74a81cf37654a666eb78e88cbc76fac585d97fb7"
+dependencies = [
+ "apic",
+ "atomic_linked_list",
+ "lazy_static",
+ "log",
+ "memory",
+ "spin 0.9.4",
+ "x86_64",
+]
+
+[[package]]
 name = "type-map"
 version = "0.4.0"
 source = "registry+https://github.com/rust-lang/crates.io-index"
@@ -5524,7 +6666,7 @@ dependencies = [
  "lazy_static",
  "pretty_assertions",
  "regex",
- "rustc_version",
+ "rustc_version 0.4.0",
  "serde",
  "serde_json",
 ]
@@ -5708,6 +6850,15 @@ source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "f14ee04d9415b52b3aeab06258a3f07093182b88ba0f9b8d203f211a7a7d41c7"
 
 [[package]]
+name = "unreachable"
+version = "1.0.0"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+checksum = "382810877fe448991dfc7f0dd6e3ae5d58088fd0ea5e35189655f84e6814fa56"
+dependencies = [
+ "void",
+]
+
+[[package]]
 name = "unstable-book-gen"
 version = "0.1.0"
 dependencies = [
@@ -5724,6 +6875,21 @@ dependencies = [
  "compiler_builtins",
  "core",
  "libc",
+]
+
+[[package]]
+name = "unwind"
+version = "0.1.0"
+source = "git+https://github.com/theseus-os/Theseus#74a81cf37654a666eb78e88cbc76fac585d97fb7"
+dependencies = [
+ "external_unwind_info",
+ "fallible-iterator",
+ "gimli 0.25.0",
+ "interrupts",
+ "log",
+ "memory",
+ "mod_mgmt",
+ "task",
 ]
 
 [[package]]
@@ -5763,6 +6929,17 @@ source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "8772a4ccbb4e89959023bc5b7cb8623a795caa7092d99f3aa9501b9484d4557d"
 
 [[package]]
+name = "util"
+version = "0.1.0"
+source = "git+https://github.com/theseus-os/Theseus#74a81cf37654a666eb78e88cbc76fac585d97fb7"
+
+[[package]]
+name = "vcell"
+version = "0.1.3"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+checksum = "77439c1b53d2303b20d9459b1ade71a83c716e3f9c34f3228c00e6f185d6c002"
+
+[[package]]
 name = "vcpkg"
 version = "0.2.10"
 source = "registry+https://github.com/rust-lang/crates.io-index"
@@ -5788,6 +6965,55 @@ name = "version_check"
 version = "0.9.3"
 source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "5fecdca9a5291cc2b8dcf7dc02453fee791a280f3743cb0905f8822ae463b3fe"
+
+[[package]]
+name = "vfs_node"
+version = "0.1.0"
+source = "git+https://github.com/theseus-os/Theseus#74a81cf37654a666eb78e88cbc76fac585d97fb7"
+dependencies = [
+ "fs_node",
+ "log",
+ "memory",
+ "spin 0.9.4",
+]
+
+[[package]]
+name = "vga_buffer"
+version = "0.1.0"
+source = "git+https://github.com/theseus-os/Theseus#74a81cf37654a666eb78e88cbc76fac585d97fb7"
+dependencies = [
+ "kernel_config",
+ "logger",
+ "spin 0.9.4",
+ "volatile 0.2.7",
+]
+
+[[package]]
+name = "void"
+version = "1.0.2"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+checksum = "6a02e4885ed3bc0f2de90ea6dd45ebcbb66dacffe03547fadbb0eeae2770887d"
+
+[[package]]
+name = "volatile"
+version = "0.2.7"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+checksum = "f6b06ad3ed06fef1713569d547cdbdb439eafed76341820fb0e0344f29a41945"
+
+[[package]]
+name = "volatile"
+version = "0.4.5"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+checksum = "e3ca98349dda8a60ae74e04fd90c7fb4d6a4fbe01e6d3be095478aa0b76f6c0c"
+
+[[package]]
+name = "volatile-register"
+version = "0.2.1"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+checksum = "9ee8f19f9d74293faf70901bc20ad067dc1ad390d2cbf1e3f75f721ffee908b6"
+dependencies = [
+ "vcell",
+]
 
 [[package]]
 name = "vte"
@@ -5901,12 +7127,32 @@ source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "c811ca4a8c853ef420abd8592ba53ddbbac90410fab6903b3e79972a631f7680"
 
 [[package]]
+name = "x86_64"
+version = "0.14.10"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+checksum = "100555a863c0092238c2e0e814c1096c1e5cf066a309c696a87e907b5f8c5d69"
+dependencies = [
+ "bit_field 0.10.1",
+ "bitflags",
+ "rustversion",
+ "volatile 0.4.5",
+]
+
+[[package]]
 name = "xattr"
 version = "0.2.2"
 source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "244c3741f4240ef46274860397c7c74e50eb23624996930e484c16679633a54c"
 dependencies = [
  "libc",
+]
+
+[[package]]
+name = "xmas-elf"
+version = "0.6.2"
+source = "git+https://github.com/theseus-os/xmas-elf.git#635d55f6886ae3fe0ec8a78e0bcc1238224c903d"
+dependencies = [
+ "zero",
 ]
 
 [[package]]
@@ -5951,4 +7197,30 @@ source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "fe5c30ade05e61656247b2e334a031dfd0cc466fadef865bdcdea8d537951bf1"
 dependencies = [
  "winapi",
+]
+
+[[package]]
+name = "zero"
+version = "0.1.3"
+source = "git+https://github.com/theseus-os/zero.git#9fc7ff523138a21f40359b706d2d6bf91deafc62"
+
+[[package]]
+name = "zerocopy"
+version = "0.5.0"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+checksum = "5e59ec1d2457bd6c0dd89b50e7d9d6b0b647809bf3f0a59ac85557046950b7b2"
+dependencies = [
+ "byteorder",
+ "zerocopy-derive",
+]
+
+[[package]]
+name = "zerocopy-derive"
+version = "0.3.1"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+checksum = "a0fbc82b82efe24da867ee52e015e58178684bd9dd64c34e66bdf21da2582a9f"
+dependencies = [
+ "proc-macro2",
+ "syn",
+ "synstructure",
 ]
