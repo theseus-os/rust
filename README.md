@@ -12,6 +12,36 @@ You can ask for help in the [#new members Zulip stream][new-members].**
 
 [new-members]: https://rust-lang.zulipchat.com/#narrow/stream/122652-new-members
 
+# Building for Theseus
+
+The standard library for Theseus targets depends on `libtheseus` (from `theseus-
+os/Theseus/std-dep`). `std` is built in two stages to avoid needing the `rustc-
+dep-of-std` feature in all kernel crates. First, `library/alloc` is built, also
+building `library/core` and `compiler_builtins` as dependencies. Then, the rest
+of `std`, including `libtheseus`, is built. Importantly, the `deps` directory
+containing the rlibs from the previous stage is included in the library search
+path.
+
+There are a couple of issues with this approach that we must solve:
+- [ ] The dependency ignores patches in `Theseus/Cargo.toml`. For now, we've
+just moved them all to `rust/Cargo.toml`.
+- [ ] The dependency ignores `Theseus/Cargo.lock`. For now, we've removed
+it from the `std-dep` branch of Theseus, but lock files are important for
+reproducible builds.
+- [ ] The standard library must be built using `build.sh`. There is currently
+no way to add library search paths that persist for dependencies from build
+scripts. Also, we're presently manually building `library/alloc` then `library/
+std`; ideally, this would be done automatically in `bootstrap`.
+
+To build `std` run `build.sh`. If you're encountering errors, try `rebuild.sh`.
+Both scripts assume the host triple is `x86_64-unknown-linux-gnu`.
+
+To build a crate using the newly-created `std`, run:
+```bash
+export RUSTFLAGS="--sysroot /path/to/rust/build/x86_64-unknown-linux-gnu/stage0-sysroot/"
+cargo b --target /path/to/rust/x86_64-theseus.json
+```
+
 ## Quick Start
 
 Read ["Installation"] from [The Book].
