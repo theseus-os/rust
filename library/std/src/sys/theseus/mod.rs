@@ -2,7 +2,6 @@
 
 pub use libtheseus as _;
 
-// TODO: Don't generate _start / don't call this function for Theseus.
 #[no_mangle]
 #[doc(hidden)]
 pub unsafe extern "C" fn __libc_start_main(
@@ -15,11 +14,6 @@ pub unsafe extern "C" fn __libc_start_main(
 ) -> i32 {
     // FIXME: Does Rust use envp?
     main(argc, argv, crate::ptr::null()) 
-}
-
-#[no_mangle]
-pub unsafe extern "C" fn runtime_entry() -> i32 {
-    0
 }
 
 pub mod alloc;

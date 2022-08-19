@@ -1,7 +1,7 @@
 use crate::io;
 
 use libtheseus::{
-    core2::io::{Write, Read},
+    core2::io::{Read, Write},
     stdio::{stderr, stdin, stdout},
 };
 
@@ -17,7 +17,7 @@ impl Stdin {
 
 impl io::Read for Stdin {
     fn read(&mut self, buf: &mut [u8]) -> io::Result<usize> {
-        let stdin= stdin().unwrap();
+        let stdin = stdin().unwrap();
         let mut lock = stdin.lock();
         lock.read(buf).map_err(|_| io::Error::from(io::ErrorKind::Other))
     }
