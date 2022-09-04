@@ -4,7 +4,7 @@ use crate::num::NonZeroUsize;
 use crate::sys::unsupported;
 use crate::time::Duration;
 
-pub struct Thread(libtheseus::task::TaskRef);
+pub struct Thread(libtheseus::task::JoinableTaskRef);
 
 pub const DEFAULT_MIN_STACK_SIZE: usize =
     libtheseus::mem::KERNEL_STACK_SIZE_IN_PAGES * libtheseus::mem::PAGE_SIZE;

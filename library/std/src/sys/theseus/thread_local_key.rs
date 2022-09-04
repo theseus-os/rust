@@ -1,3 +1,6 @@
+//! Theseus has support for TLS sections and so these functions should not be
+//! used.
+
 pub type Key = usize;
 
 #[inline]

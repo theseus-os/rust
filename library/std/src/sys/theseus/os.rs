@@ -7,11 +7,11 @@ use crate::marker::PhantomData;
 use crate::path::{self, PathBuf};
 
 pub fn errno() -> i32 {
-    0
+    panic!("should not be used on this target");
 }
 
 pub fn error_string(_errno: i32) -> String {
-    "operation successful".to_string()
+    panic!("should not be used on this target");
 }
 
 pub fn getcwd() -> io::Result<PathBuf> {

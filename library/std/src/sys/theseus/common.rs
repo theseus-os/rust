@@ -5,7 +5,8 @@ pub mod memchr {
 }
 
 // SAFETY: must be called only once during runtime initialization.
-// NOTE: this is not guaranteed to run, for example when Rust code is called externally.
+// NOTE: this is not guaranteed to run, for example when Rust code is called
+// externally.
 pub unsafe fn init(_argc: isize, _argv: *const *const u8) {}
 
 // SAFETY: must be called only once during runtime cleanup.
@@ -32,5 +33,6 @@ pub fn abort_internal() -> ! {
 }
 
 pub fn hashmap_random_keys() -> (u64, u64) {
-    (1, 2)
+    use libtheseus::rand::next_u64;
+    (next_u64(), next_u64())
 }
