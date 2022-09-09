@@ -28,18 +28,11 @@ just moved them all to `rust/Cargo.toml`.
 - [ ] The dependency ignores `Theseus/Cargo.lock`. For now, we've removed
 it from the `std-dep` branch of Theseus, but lock files are important for
 reproducible builds.
-- [ ] The standard library must be built using `build.sh`. There is currently
-no way to add library search paths that persist for dependencies from build
-scripts. Also, we're presently manually building `library/alloc` then `library/
-std`; ideally, this would be done automatically in `bootstrap`.
 
-To build `std` run `build.sh`. If you're encountering errors, try `rebuild.sh`.
-Both scripts assume the host triple is `x86_64-unknown-linux-gnu`.
-
-To build a crate using the newly-created `std`, run:
+To build Theseus with a custom std run:
 ```bash
-export RUSTFLAGS="--sysroot /path/to/rust/build/x86_64-unknown-linux-gnu/stage0-sysroot/"
-cargo b --target /path/to/rust/x86_64-theseus.json
+# in the theseus repo
+make build local_rust=/path/to/rust
 ```
 
 ## Quick Start
