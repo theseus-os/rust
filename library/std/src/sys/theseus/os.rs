@@ -1,10 +1,11 @@
-use super::unsupported;
-use crate::error::Error as StdError;
-use crate::ffi::{OsStr, OsString};
-use crate::fmt;
-use crate::io;
-use crate::marker::PhantomData;
-use crate::path::{self, PathBuf};
+use super::{current_task, current_task_id, io_err, unsupported};
+use crate::{
+    error::Error as StdError,
+    ffi::{OsStr, OsString},
+    fmt, io,
+    marker::PhantomData,
+    path::{self, PathBuf},
+};
 
 pub fn errno() -> i32 {
     panic!("should not be used on this target");
@@ -15,18 +16,12 @@ pub fn error_string(_errno: i32) -> String {
 }
 
 pub fn getcwd() -> io::Result<PathBuf> {
-    let cwd = libtheseus::task::get_my_current_task()
-        .expect("couldn't get current task")
-        .get_env()
-        .lock()
-        .cwd()
-        .into();
+    let cwd = current_task()?.get_env().lock().cwd().into();
     Ok(cwd)
 }
 
 pub fn chdir(path: &path::Path) -> io::Result<()> {
-    libtheseus::task::get_my_current_task()
-        .expect("couldn't get current task")
+    current_task()?
         .get_env()
         .lock()
         .chdir(&libtheseus::path::Path::new(
@@ -85,12 +80,16 @@ impl StdError for JoinPathsError {
 }
 
 pub fn current_exe() -> io::Result<PathBuf> {
-    let task = libtheseus::task::get_my_current_task()
-        .ok_or_else(|| io::Error::new(io::ErrorKind::Other, "couldn't get current task"))?;
-    let app_crate = task.app_crate.as_ref().ok_or_else(|| {
-        io::Error::new(io::ErrorKind::Other, "task didn't contain reference to app crate")
-    })?;
-    let path = app_crate.lock_as_ref().object_file.lock().get_absolute_path();
+    let task = current_task()?;
+    let app_crate = task
+        .app_crate
+        .as_ref()
+        .ok_or_else(|| io_err("task didn't contain reference to app crate"))?;
+    let path = app_crate
+        .lock_as_ref()
+        .object_file
+        .lock()
+        .get_absolute_path();
     Ok(path.into())
 }
 
@@ -106,27 +105,40 @@ impl Iterator for Env {
 }
 
 pub fn env() -> Env {
-    let task = libtheseus::task::get_my_current_task().expect("couldn't get current task");
-    Env { inner: task.get_env().lock().variables.clone().into_iter() }
+    let task = current_task().expect("couldn't get current task");
+    Env {
+        inner: task.get_env().lock().variables.clone().into_iter(),
+    }
 }
 
 pub fn getenv(key: &OsStr) -> Option<OsString> {
     let task = libtheseus::task::get_my_current_task().expect("couldn't get current task");
-    task.get_env().lock().get(key.to_str().expect("key was not valid unicode")).map(|s| s.into())
+    task.get_env()
+        .lock()
+        .get(key.to_str().expect("key was not valid unicode"))
+        .map(|s| s.into())
 }
 
 pub fn setenv(key: &OsStr, value: &OsStr) -> io::Result<()> {
-    let task = libtheseus::task::get_my_current_task().expect("couldn't get current task");
+    let task = current_task()?;
     task.get_env().lock().set(
-        key.to_str().expect("key was not valid unicode").to_owned(),
-        value.to_str().expect("value was not valid unicode").to_owned(),
+        key.to_str()
+            .ok_or_else(|| invalid_data_io_err("key was not valid unicode"))
+            .to_owned(),
+        value
+            .to_str()
+            .ok_or_else(|| invalid_data_io_err("value was not valid unicode"))
+            .to_owned(),
     );
     Ok(())
 }
 
 pub fn unsetenv(key: &OsStr) -> io::Result<()> {
-    let task = libtheseus::task::get_my_current_task().expect("couldn't get current task");
-    task.get_env().lock().unset(key.to_str().expect("key was not valid unicode"));
+    let task = current_task()?;
+    task.get_env().lock().unset(
+        key.to_str()
+            .ok_or_else(|| invalid_data_io_err("key was not valid unicode")),
+    );
     Ok(())
 }
 
@@ -139,13 +151,18 @@ pub fn home_dir() -> Option<PathBuf> {
 }
 
 pub fn exit(code: i32) -> ! {
-    let task = libtheseus::task::get_my_current_task().expect("couldn't get current task");
-    task.mark_as_exited(Box::new(code)).expect("couldn't mark task as exited");
+    let task = current_task().expect("couldn't get current task");
+    task.mark_as_exited(Box::new(code))
+        .expect("couldn't mark task as exited");
     libtheseus::task::yield_now();
 
     panic!("task scheduled after exiting");
 }
 
 pub fn getpid() -> u32 {
-    libtheseus::task::get_my_current_task_id().expect("couldn't get current task id") as u32
+    current_task_id().expect("couldn't get current task id") as u32
+}
+
+fn invalid_data_io_err(s: &str) -> io::Error {
+    io::Error::new(io::ErrorKind::InvalidData, s)
 }

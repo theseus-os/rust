@@ -1,5 +1,5 @@
+use super::{convert_core2_err, io_err};
 use crate::io;
-
 use libtheseus::{
     core2::io::{Read, Write},
     stdio::{stderr, stdin, stdout},
@@ -17,9 +17,9 @@ impl Stdin {
 
 impl io::Read for Stdin {
     fn read(&mut self, buf: &mut [u8]) -> io::Result<usize> {
-        let stdin = stdin().unwrap();
+        let stdin = stdin().map_err(io_err)?;
         let mut lock = stdin.lock();
-        lock.read(buf).map_err(|_| io::Error::from(io::ErrorKind::Other))
+        lock.read(buf).map_err(convert_core2_err)
     }
 }
 
@@ -31,15 +31,15 @@ impl Stdout {
 
 impl io::Write for Stdout {
     fn write(&mut self, buf: &[u8]) -> io::Result<usize> {
-        let stdout = stdout().unwrap();
+        let stdout = stdout().map_err(io_err)?;
         let mut lock = stdout.lock();
-        lock.write(buf).map_err(|_| io::Error::from(io::ErrorKind::Other))
+        lock.write(buf).map_err(convert_core2_err)
     }
 
     fn flush(&mut self) -> io::Result<()> {
-        let stdout = stdout().unwrap();
+        let stdout = stdout().map_err(io_err)?;
         let mut lock = stdout.lock();
-        lock.flush().map_err(|_| io::Error::from(io::ErrorKind::Other))
+        lock.flush().map_err(convert_core2_err)
     }
 }
 
@@ -51,15 +51,15 @@ impl Stderr {
 
 impl io::Write for Stderr {
     fn write(&mut self, buf: &[u8]) -> io::Result<usize> {
-        let stderr = stderr().unwrap();
+        let stderr = stderr().map_err(io_err)?;
         let mut lock = stderr.lock();
-        lock.write(buf).map_err(|_| io::Error::from(io::ErrorKind::Other))
+        lock.write(buf).map_err(convert_core2_err)
     }
 
     fn flush(&mut self) -> io::Result<()> {
-        let stderr = stderr().unwrap();
+        let stderr = stderr().map_err(io_err)?;
         let mut lock = stderr.lock();
-        lock.flush().map_err(|_| io::Error::from(io::ErrorKind::Other))
+        lock.flush().map_err(convert_core2_err)
     }
 }
 
