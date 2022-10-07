@@ -47,8 +47,8 @@ fortanix-sgx-abi = { version = "0.3.2", features = ['rustc-dep-of-std'] }
 hermit-abi = { version = "0.2.0", features = ['rustc-dep-of-std'] }
 
 [target.'cfg(target_os = "theseus")'.dependencies]
-libtheseus = { path = "../../../theseus/libtheseus", default-features = false }
-# libtheseus = { git = "https://github.com/theseus-os/Theseus", branch = "std_dep", default-features = false }
+libtheseus = { git = "https://github.com/theseus-os/Theseus", branch = "std_dep" }
+# needed for the mem intrinsics
 alloc = { path = "../alloc", features = ["compiler-builtins-mem"] }
 
 [target.wasm32-wasi.dependencies]

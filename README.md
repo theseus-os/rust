@@ -19,19 +19,28 @@ os/Theseus/std-dep`). `std` is built in two stages to avoid needing the `rustc-
 dep-of-std` feature in all kernel crates. First, `library/alloc` is built, also
 building `library/core` and `compiler_builtins` as dependencies. Then, the rest
 of `std`, including `libtheseus`, is built. Importantly, the `deps` directory
-containing the rlibs from the previous stage is included in the library search
-path.
+containing the rlibs from the `library/alloc` build is included in the library
+search path.
 
-There are a couple of issues with this approach that we must solve:
-- [ ] The dependency ignores patches in `Theseus/Cargo.toml`. For now, we've
-just moved them all to `rust/Cargo.toml`.
-- [ ] The dependency ignores `Theseus/Cargo.lock`. For now, we've removed
-it from the `std-dep` branch of Theseus, but lock files are important for
-reproducible builds.
+First, run:
 
-To build Theseus with a custom std run:
+```bash
+rustup toolchain install nightly-2022-07-25
+# in the rust repo
+echo "profile = \"library\"
+changelog-seen = 2
+[rust]
+deny-warnings = false
+[build]
+cargo = \"/home/$USER/.rustup/toolchains/nightly-2022-07-25-x86_64-unknown-linux-gnu/bin/cargo\"
+rustc = \"/home/$USER/.rustup/toolchains/nightly-2022-07-25-x86_64-unknown-linux-gnu/bin/rustc\"" > config.toml
+```
+
+Then to build Theseus run:
+
 ```bash
 # in the theseus repo
+git checkout std_dep
 make build local_rust=/path/to/rust
 ```
 
