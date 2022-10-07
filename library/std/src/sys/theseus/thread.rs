@@ -13,16 +13,13 @@ impl Thread {
         let stack = task::alloc_stack_by_bytes(stack, &mut mmi_ref.lock().page_table)
             .ok_or_else(|| io_err("couldn't allocate stack"))?;
 
-        let child_task = libtheseus::task::new_task_builder(|_| p(), ())
-            .block()
-            .stack(stack)
-            .spawn()
-            .map_err(io_err)?;
+        let child_task =
+            task::new_task_builder(|_| p(), ()).block().stack(stack).spawn().map_err(io_err)?;
 
         // FIXME: We need to delete the streams when the thread exits.
-        let current_task_io_streams = libtheseus::stdio::get_streams(current_task_id()?)
+        let current_task_io_streams = stdio::get_streams(current_task_id()?)
             .ok_or_else(|| io_err("couldn't get current task io streams"))?;
-        libtheseus::stdio::insert_child_streams(child_task.id, current_task_io_streams);
+        stdio::insert_child_streams(child_task.id, current_task_io_streams);
 
         let current_env = current_task()?.get_env();
         child_task.set_env(current_env);
@@ -32,7 +29,7 @@ impl Thread {
     }
 
     pub fn yield_now() {
-        libtheseus::task::yield_now();
+        task::yield_now();
     }
 
     pub fn set_name(name: &CStr) {

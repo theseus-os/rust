@@ -26,7 +26,9 @@ pub fn chdir(path: &path::Path) -> io::Result<()> {
         .lock()
         .chdir(&libtheseus::path::Path::new(
             path.to_str()
-                .ok_or_else(|| io::Error::new(io::ErrorKind::InvalidData, "path not UTF-8 valid"))?
+                .ok_or_else(|| {
+                    io::Error::new(io::ErrorKind::InvalidData, "path was not valid unicode")
+                })?
                 .to_owned(),
         ))
         .map_err(|e| match e {
@@ -85,11 +87,7 @@ pub fn current_exe() -> io::Result<PathBuf> {
         .app_crate
         .as_ref()
         .ok_or_else(|| io_err("task didn't contain reference to app crate"))?;
-    let path = app_crate
-        .lock_as_ref()
-        .object_file
-        .lock()
-        .get_absolute_path();
+    let path = app_crate.lock_as_ref().object_file.lock().get_absolute_path();
     Ok(path.into())
 }
 
@@ -106,39 +104,28 @@ impl Iterator for Env {
 
 pub fn env() -> Env {
     let task = current_task().expect("couldn't get current task");
-    Env {
-        inner: task.get_env().lock().variables.clone().into_iter(),
-    }
+    Env { inner: task.get_env().lock().variables.clone().into_iter() }
 }
 
 pub fn getenv(key: &OsStr) -> Option<OsString> {
     let task = libtheseus::task::get_my_current_task().expect("couldn't get current task");
-    task.get_env()
-        .lock()
-        .get(key.to_str().expect("key was not valid unicode"))
-        .map(|s| s.into())
+    task.get_env().lock().get(key.to_str().expect("key was not valid unicode")).map(|s| s.into())
 }
 
 pub fn setenv(key: &OsStr, value: &OsStr) -> io::Result<()> {
     let task = current_task()?;
     task.get_env().lock().set(
-        key.to_str()
-            .ok_or_else(|| invalid_data_io_err("key was not valid unicode"))
-            .to_owned(),
-        value
-            .to_str()
-            .ok_or_else(|| invalid_data_io_err("value was not valid unicode"))
-            .to_owned(),
+        key.to_str().ok_or_else(|| invalid_data_io_err("key was not valid unicode")).to_owned(),
+        value.to_str().ok_or_else(|| invalid_data_io_err("value was not valid unicode")).to_owned(),
     );
     Ok(())
 }
 
 pub fn unsetenv(key: &OsStr) -> io::Result<()> {
     let task = current_task()?;
-    task.get_env().lock().unset(
-        key.to_str()
-            .ok_or_else(|| invalid_data_io_err("key was not valid unicode")),
-    );
+    task.get_env()
+        .lock()
+        .unset(key.to_str().ok_or_else(|| invalid_data_io_err("key was not valid unicode")));
     Ok(())
 }
 
@@ -152,8 +139,7 @@ pub fn home_dir() -> Option<PathBuf> {
 
 pub fn exit(code: i32) -> ! {
     let task = current_task().expect("couldn't get current task");
-    task.mark_as_exited(Box::new(code))
-        .expect("couldn't mark task as exited");
+    task.mark_as_exited(Box::new(code)).expect("couldn't mark task as exited");
     libtheseus::task::yield_now();
 
     panic!("task scheduled after exiting");
