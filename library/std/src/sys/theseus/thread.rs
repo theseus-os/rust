@@ -8,9 +8,9 @@ pub const DEFAULT_MIN_STACK_SIZE: usize = mem::KERNEL_STACK_SIZE_IN_PAGES * mem:
 
 impl Thread {
     // unsafe: see thread::Builder::spawn_unchecked for safety requirements
-    pub unsafe fn new(stack: usize, p: Box<dyn FnOnce()>) -> io::Result<Thread> {
+    pub unsafe fn new(stack_size: usize, p: Box<dyn FnOnce()>) -> io::Result<Thread> {
         let mmi_ref = mem::get_kernel_mmi_ref().ok_or_else(|| io_err("couldn't get kernel mmi"))?;
-        let stack = task::alloc_stack_by_bytes(stack, &mut mmi_ref.lock().page_table)
+        let stack = task::alloc_stack_by_bytes(stack_size, &mut mmi_ref.lock().page_table)
             .ok_or_else(|| io_err("couldn't allocate stack"))?;
 
         let child_task =

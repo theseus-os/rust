@@ -1,4 +1,4 @@
-use super::{current_task, current_task_id, io_err, unsupported};
+use super::{current_task, current_task_id, io_err};
 use crate::{
     error::Error as StdError,
     ffi::{OsStr, OsString},
@@ -115,8 +115,8 @@ pub fn getenv(key: &OsStr) -> Option<OsString> {
 pub fn setenv(key: &OsStr, value: &OsStr) -> io::Result<()> {
     let task = current_task()?;
     task.get_env().lock().set(
-        key.to_str().ok_or_else(|| invalid_data_io_err("key was not valid unicode")).to_owned(),
-        value.to_str().ok_or_else(|| invalid_data_io_err("value was not valid unicode")).to_owned(),
+        key.to_str().ok_or_else(|| invalid_data_io_err("key was not valid unicode"))?.to_owned(),
+        value.to_str().ok_or_else(|| invalid_data_io_err("value was not valid unicode"))?.to_owned(),
     );
     Ok(())
 }
@@ -125,7 +125,7 @@ pub fn unsetenv(key: &OsStr) -> io::Result<()> {
     let task = current_task()?;
     task.get_env()
         .lock()
-        .unset(key.to_str().ok_or_else(|| invalid_data_io_err("key was not valid unicode")));
+        .unset(key.to_str().ok_or_else(|| invalid_data_io_err("key was not valid unicode"))?);
     Ok(())
 }
 
