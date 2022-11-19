@@ -12,6 +12,38 @@ You can ask for help in the [#new members Zulip stream][new-members].**
 
 [new-members]: https://rust-lang.zulipchat.com/#narrow/stream/122652-new-members
 
+# Building for Theseus
+
+The standard library for Theseus targets depends on `libtheseus` (from `theseus-
+os/Theseus/std-dep`). `std` is built in two stages to avoid needing the `rustc-
+dep-of-std` feature in all kernel crates. First, `library/alloc` is built, also
+building `library/core` and `compiler_builtins` as dependencies. Then, the rest
+of `std`, including `libtheseus`, is built. Importantly, the `deps` directory
+containing the rlibs from the `library/alloc` build is included in the library
+search path.
+
+First, run:
+
+```bash
+rustup toolchain install nightly-2022-07-25
+# in the rust repo
+echo "profile = \"library\"
+changelog-seen = 2
+[rust]
+deny-warnings = false
+[build]
+cargo = \"/home/$USER/.rustup/toolchains/nightly-2022-07-25-x86_64-unknown-linux-gnu/bin/cargo\"
+rustc = \"/home/$USER/.rustup/toolchains/nightly-2022-07-25-x86_64-unknown-linux-gnu/bin/rustc\"" > config.toml
+```
+
+Then to build Theseus run:
+
+```bash
+# in the theseus repo
+git checkout std_dep
+make build local_rust=/path/to/rust
+```
+
 ## Quick Start
 
 Read ["Installation"] from [The Book].

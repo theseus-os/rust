@@ -15,7 +15,6 @@ cfg-if = { version = "0.1.8", features = ['rustc-dep-of-std'] }
 panic_unwind = { path = "../panic_unwind", optional = true }
 panic_abort = { path = "../panic_abort" }
 core = { path = "../core" }
-libc = { version = "0.2.126", default-features = false, features = ['rustc-dep-of-std'] }
 compiler_builtins = { version = "0.1.73" }
 profiler_builtins = { path = "../profiler_builtins", optional = true }
 unwind = { path = "../unwind" }
@@ -32,6 +31,9 @@ optional = true
 default-features = false
 features = ['read_core', 'elf', 'macho', 'pe', 'unaligned', 'archive']
 
+[target.'cfg(not(target_os = "theseus"))'.dependencies]
+libc = { version = "0.2.126", default-features = false, features = ['rustc-dep-of-std'] }
+
 [dev-dependencies]
 rand = "0.7"
 
@@ -45,6 +47,9 @@ fortanix-sgx-abi = { version = "0.3.2", features = ['rustc-dep-of-std'] }
 hermit-abi = { version = "0.2.0", features = ['rustc-dep-of-std'] }
 
 [target.'cfg(target_os = "theseus")'.dependencies]
+libtheseus = { git = "https://github.com/theseus-os/Theseus", branch = "std_dep" }
+# needed for the mem intrinsics
+alloc = { path = "../alloc", features = ["compiler-builtins-mem"] }
 
 [target.wasm32-wasi.dependencies]
 wasi = { version = "0.11.0", features = ['rustc-dep-of-std'], default-features = false }

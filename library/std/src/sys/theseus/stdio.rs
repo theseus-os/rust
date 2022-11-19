@@ -1,4 +1,9 @@
+use super::io_err;
 use crate::io;
+use libtheseus::{
+    core2::io::{Read, Write},
+    stdio::{stderr, stdin, stdout},
+};
 
 pub struct Stdin;
 pub struct Stdout;
@@ -11,8 +16,10 @@ impl Stdin {
 }
 
 impl io::Read for Stdin {
-    fn read(&mut self, _buf: &mut [u8]) -> io::Result<usize> {
-        Ok(0)
+    fn read(&mut self, buf: &mut [u8]) -> io::Result<usize> {
+        let stdin = stdin().map_err(io_err)?;
+        let mut lock = stdin.lock();
+        lock.read(buf).map_err(io::Error::from)
     }
 }
 
@@ -24,11 +31,15 @@ impl Stdout {
 
 impl io::Write for Stdout {
     fn write(&mut self, buf: &[u8]) -> io::Result<usize> {
-        Ok(buf.len())
+        let stdout = stdout().map_err(io_err)?;
+        let mut lock = stdout.lock();
+        lock.write(buf).map_err(io::Error::from)
     }
 
     fn flush(&mut self) -> io::Result<()> {
-        Ok(())
+        let stdout = stdout().map_err(io_err)?;
+        let mut lock = stdout.lock();
+        lock.flush().map_err(io::Error::from)
     }
 }
 
@@ -40,11 +51,15 @@ impl Stderr {
 
 impl io::Write for Stderr {
     fn write(&mut self, buf: &[u8]) -> io::Result<usize> {
-        Ok(buf.len())
+        let stderr = stderr().map_err(io_err)?;
+        let mut lock = stderr.lock();
+        lock.write(buf).map_err(io::Error::from)
     }
 
     fn flush(&mut self) -> io::Result<()> {
-        Ok(())
+        let stderr = stderr().map_err(io_err)?;
+        let mut lock = stderr.lock();
+        lock.flush().map_err(io::Error::from)
     }
 }
 
