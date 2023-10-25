@@ -1,25 +1,46 @@
-use super::unsupported;
-use crate::error::Error as StdError;
-use crate::ffi::{OsStr, OsString};
-use crate::fmt;
-use crate::io;
-use crate::marker::PhantomData;
-use crate::path::{self, PathBuf};
+use super::{current_task, current_task_id, io_err};
+use crate::{
+    error::Error as StdError,
+    ffi::{OsStr, OsString},
+    fmt, io,
+    marker::PhantomData,
+    path::{self, PathBuf},
+};
 
 pub fn errno() -> i32 {
-    0
+    panic!("should not be used on this target");
 }
 
 pub fn error_string(_errno: i32) -> String {
-    "operation successful".to_string()
+    panic!("should not be used on this target");
 }
 
 pub fn getcwd() -> io::Result<PathBuf> {
-    unsupported()
+    let cwd = current_task()?.get_env().lock().cwd().into();
+    Ok(cwd)
 }
 
-pub fn chdir(_: &path::Path) -> io::Result<()> {
-    unsupported()
+pub fn chdir(path: &path::Path) -> io::Result<()> {
+    current_task()?
+        .get_env()
+        .lock()
+        .chdir(&libtheseus::path::Path::new(
+            path.to_str()
+                .ok_or_else(|| {
+                    io::Error::new(io::ErrorKind::InvalidData, "path was not valid unicode")
+                })?
+                .to_owned(),
+        ))
+        .map_err(|e| match e {
+            libtheseus::env::Error::NotADirectory => io::Error::new(
+                io::ErrorKind::NotADirectory,
+                "tried to change directory into node that isn't a directory",
+            ),
+            libtheseus::env::Error::NotFound => io::Error::new(
+                io::ErrorKind::NotFound,
+                "tried to change directory into node that doesn't exist",
+            ),
+        })
 }
 
 pub struct SplitPaths<'a>(!, PhantomData<&'a ()>);
@@ -43,6 +64,7 @@ where
     I: Iterator<Item = T>,
     T: AsRef<OsStr>,
 {
+    // Theseus doesn't have the concept of a `PATH` environment variable.
     Err(JoinPathsError)
 }
 
@@ -60,32 +82,51 @@ impl StdError for JoinPathsError {
 }
 
 pub fn current_exe() -> io::Result<PathBuf> {
-    unsupported()
+    let task = current_task()?;
+    let app_crate = task
+        .app_crate
+        .as_ref()
+        .ok_or_else(|| io_err("task didn't contain reference to app crate"))?;
+    let path = app_crate.lock_as_ref().object_file.lock().get_absolute_path();
+    Ok(path.into())
 }
 
-pub struct Env(!);
+pub struct Env {
+    inner: libtheseus::env::EnvIter,
+}
 
 impl Iterator for Env {
     type Item = (OsString, OsString);
     fn next(&mut self) -> Option<(OsString, OsString)> {
-        self.0
+        self.inner.next().map(|(k, v)| (k.into(), v.into()))
     }
 }
 
 pub fn env() -> Env {
-    panic!("not supported on this platform")
+    let task = current_task().expect("couldn't get current task");
+    Env { inner: task.get_env().lock().variables.clone().into_iter() }
 }
 
-pub fn getenv(_: &OsStr) -> Option<OsString> {
-    None
+pub fn getenv(key: &OsStr) -> Option<OsString> {
+    let task = libtheseus::task::get_my_current_task().expect("couldn't get current task");
+    task.get_env().lock().get(key.to_str().expect("key was not valid unicode")).map(|s| s.into())
 }
 
-pub fn setenv(_: &OsStr, _: &OsStr) -> io::Result<()> {
-    Err(io::const_io_error!(io::ErrorKind::Unsupported, "cannot set env vars on this platform"))
+pub fn setenv(key: &OsStr, value: &OsStr) -> io::Result<()> {
+    let task = current_task()?;
+    task.get_env().lock().set(
+        key.to_str().ok_or_else(|| invalid_data_io_err("key was not valid unicode"))?.to_owned(),
+        value.to_str().ok_or_else(|| invalid_data_io_err("value was not valid unicode"))?.to_owned(),
+    );
+    Ok(())
 }
 
-pub fn unsetenv(_: &OsStr) -> io::Result<()> {
-    Err(io::const_io_error!(io::ErrorKind::Unsupported, "cannot unset env vars on this platform"))
+pub fn unsetenv(key: &OsStr) -> io::Result<()> {
+    let task = current_task()?;
+    task.get_env()
+        .lock()
+        .unset(key.to_str().ok_or_else(|| invalid_data_io_err("key was not valid unicode"))?);
+    Ok(())
 }
 
 pub fn temp_dir() -> PathBuf {
@@ -96,10 +137,18 @@ pub fn home_dir() -> Option<PathBuf> {
     None
 }
 
-pub fn exit(_code: i32) -> ! {
-    crate::intrinsics::abort()
+pub fn exit(code: i32) -> ! {
+    let task = current_task().expect("couldn't get current task");
+    task.mark_as_exited(Box::new(code)).expect("couldn't mark task as exited");
+    libtheseus::task::yield_now();
+
+    panic!("task scheduled after exiting");
 }
 
 pub fn getpid() -> u32 {
-    panic!("no pids on this platform")
+    current_task_id().expect("couldn't get current task id") as u32
+}
+
+fn invalid_data_io_err(s: &str) -> io::Error {
+    io::Error::new(io::ErrorKind::InvalidData, s)
 }

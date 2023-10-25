@@ -1577,8 +1577,7 @@ dependencies = [
 [[package]]
 name = "getopts"
 version = "0.2.21"
-source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "14dbbfd5c71d70241ecf9e6f13737f7b5ce823821063188d7e46c41d371eebd5"
+source = "git+https://github.com/theseus-os/getopts#da1e04828d3ecd6adc90e2da61e2e3cccc7ca97c"
 dependencies = [
  "rustc-std-workspace-core",
  "rustc-std-workspace-std",
@@ -2249,6 +2248,11 @@ name = "libm"
 version = "0.2.7"
 source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "f7012b1bbb0719e1097c47611d3898568c546d597c2e74d66f6087edd5233ff4"
+
+[[package]]
+name = "libtheseus"
+version = "0.1.0"
+source = "git+https://github.com/theseus-os/Theseus?branch=std_dep#1bfa6af5a6ce42e5ab517d4dd2c1bec90f7a6cf6"
 
 [[package]]
 name = "libz-sys"
