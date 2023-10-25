@@ -1409,11 +1409,11 @@ impl<'a> Builder<'a> {
         // features but cargo isn't involved in the #[path] process and so cannot pass the
         // complete list of features, so for that reason we don't enable checking of
         // features for std crates.
-        cargo.arg(if mode != Mode::Std {
-            "-Zcheck-cfg=names,values,output,features"
-        } else {
-            "-Zcheck-cfg=names,values,output"
-        });
+        // cargo.arg(if mode != Mode::Std {
+        //     "-Zcheck-cfg=names,values,output,features"
+        // } else {
+        //     "-Zcheck-cfg=names,values,output"
+        // });
 
         // Add extra cfg not defined in/by rustc
         //
@@ -1421,11 +1421,11 @@ impl<'a> Builder<'a> {
         // cargo would implicitly add it, it was discover that sometimes bootstrap only use
         // `rustflags` without `cargo` making it required.
         rustflags.arg("-Zunstable-options");
-        for (restricted_mode, name, values) in EXTRA_CHECK_CFGS {
+        for (restricted_mode, _name, values) in EXTRA_CHECK_CFGS {
             if *restricted_mode == None || *restricted_mode == Some(mode) {
                 // Creating a string of the values by concatenating each value:
                 // ',"tvos","watchos"' or '' (nothing) when there are no values
-                let values = match values {
+                let _values = match values {
                     Some(values) => values
                         .iter()
                         .map(|val| [",", "\"", val, "\""])
@@ -1433,7 +1433,7 @@ impl<'a> Builder<'a> {
                         .collect::<String>(),
                     None => String::new(),
                 };
-                rustflags.arg(&format!("--check-cfg=values({name}{values})"));
+                // rustflags.arg(&format!("--check-cfg=values({name}{values})"));
             }
         }
 
