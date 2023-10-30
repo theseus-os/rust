@@ -682,9 +682,9 @@ impl<'tcx> MirBorrowckCtxt<'_, 'tcx> {
                 };
                 let mir_description = match hir.body(body).coroutine_kind {
                     Some(hir::CoroutineKind::Async(gen)) => match gen {
-                        hir::AsyncCoroutineKind::Block => " of async block",
-                        hir::AsyncCoroutineKind::Closure => " of async closure",
-                        hir::AsyncCoroutineKind::Fn => {
+                        hir::CoroutineSource::Block => " of async block",
+                        hir::CoroutineSource::Closure => " of async closure",
+                        hir::CoroutineSource::Fn => {
                             let parent_item =
                                 hir.get_by_def_id(hir.get_parent_item(mir_hir_id).def_id);
                             let output = &parent_item
@@ -696,6 +696,20 @@ impl<'tcx> MirBorrowckCtxt<'_, 'tcx> {
                                 hir_ty = Some(self.get_future_inner_return_ty(*ret));
                             }
                             " of async function"
+                        }
+                    },
+                    Some(hir::CoroutineKind::Gen(gen)) => match gen {
+                        hir::CoroutineSource::Block => " of gen block",
+                        hir::CoroutineSource::Closure => " of gen closure",
+                        hir::CoroutineSource::Fn => {
+                            let parent_item =
+                                hir.get_by_def_id(hir.get_parent_item(mir_hir_id).def_id);
+                            let output = &parent_item
+                                .fn_decl()
+                                .expect("coroutine lowered from gen fn should be in fn")
+                                .output;
+                            span = output.span();
+                            " of gen function"
                         }
                     },
                     Some(hir::CoroutineKind::Coroutine) => " of coroutine",

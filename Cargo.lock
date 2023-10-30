@@ -4069,7 +4069,6 @@ dependencies = [
  "rustc_hir_analysis",
  "rustc_hir_typeck",
  "rustc_incremental",
- "rustc_index",
  "rustc_lint",
  "rustc_macros",
  "rustc_metadata",
@@ -4572,9 +4571,7 @@ dependencies = [
  "rustc-demangle",
  "rustc_data_structures",
  "rustc_errors",
- "rustc_fluent_macro",
  "rustc_hir",
- "rustc_macros",
  "rustc_middle",
  "rustc_session",
  "rustc_span",
@@ -4709,6 +4706,7 @@ dependencies = [
  "arrayvec",
  "askama",
  "expect-test",
+ "indexmap 2.0.0",
  "itertools",
  "minifier",
  "once_cell",
@@ -5386,12 +5384,6 @@ dependencies = [
 ]
 
 [[package]]
-name = "thin-vec"
-version = "0.2.12"
-source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "aac81b6fd6beb5884b0cf3321b8117e6e5d47ecb6fc89f414cfdcca8b2fe2dd8"
-
-[[package]]
 name = "theseus-shim"
 version = "0.1.0"
 dependencies = [
@@ -5400,6 +5392,12 @@ dependencies = [
  "rustc-std-workspace-alloc",
  "rustc-std-workspace-core",
 ]
+
+[[package]]
+name = "thin-vec"
+version = "0.2.12"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+checksum = "aac81b6fd6beb5884b0cf3321b8117e6e5d47ecb6fc89f414cfdcca8b2fe2dd8"
 
 [[package]]
 name = "thiserror"
@@ -5950,7 +5948,6 @@ dependencies = [
  "cfg-if 1.0.0",
  "compiler_builtins",
  "core",
- "libc",
 ]
 
 [[package]]

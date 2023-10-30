@@ -734,6 +734,8 @@ pub enum RangeSyntax {
 }
 
 /// All the different flavors of pattern that Rust recognizes.
+//
+// Adding a new variant? Please update `test_pat` in `tests/ui/macros/stringify.rs`.
 #[derive(Clone, Encodable, Decodable, Debug)]
 pub enum PatKind {
     /// Represents a wildcard pattern (`_`).
@@ -967,6 +969,7 @@ impl Stmt {
     }
 }
 
+// Adding a new variant? Please update `test_stmt` in `tests/ui/macros/stringify.rs`.
 #[derive(Clone, Encodable, Decodable, Debug)]
 pub enum StmtKind {
     /// A local (let) binding.
@@ -1232,7 +1235,7 @@ impl Expr {
             ExprKind::Closure(..) => ExprPrecedence::Closure,
             ExprKind::Block(..) => ExprPrecedence::Block,
             ExprKind::TryBlock(..) => ExprPrecedence::TryBlock,
-            ExprKind::Async(..) => ExprPrecedence::Async,
+            ExprKind::Gen(..) => ExprPrecedence::Gen,
             ExprKind::Await(..) => ExprPrecedence::Await,
             ExprKind::Assign(..) => ExprPrecedence::Assign,
             ExprKind::AssignOp(..) => ExprPrecedence::AssignOp,
@@ -1345,6 +1348,7 @@ pub struct StructExpr {
     pub rest: StructRest,
 }
 
+// Adding a new variant? Please update `test_expr` in `tests/ui/macros/stringify.rs`.
 #[derive(Clone, Encodable, Decodable, Debug)]
 pub enum ExprKind {
     /// An array (`[a, b, c, d]`)
@@ -1401,11 +1405,9 @@ pub enum ExprKind {
     Closure(Box<Closure>),
     /// A block (`'label: { ... }`).
     Block(P<Block>, Option<Label>),
-    /// An async block (`async move { ... }`).
-    ///
-    /// The async block used to have a `NodeId`, which was removed in favor of
-    /// using the parent `NodeId` of the parent `Expr`.
-    Async(CaptureBy, P<Block>),
+    /// An `async` block (`async move { ... }`),
+    /// or a `gen` block (`gen move { ... }`)
+    Gen(CaptureBy, P<Block>, GenBlockKind),
     /// An await expression (`my_future.await`). Span is of await keyword.
     Await(P<Expr>, Span),
 
@@ -1493,6 +1495,28 @@ pub enum ExprKind {
 
     /// Placeholder for an expression that wasn't syntactically well formed in some way.
     Err,
+}
+
+/// Used to differentiate between `async {}` blocks and `gen {}` blocks.
+#[derive(Clone, Encodable, Decodable, Debug, PartialEq, Eq)]
+pub enum GenBlockKind {
+    Async,
+    Gen,
+}
+
+impl fmt::Display for GenBlockKind {
+    fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
+        self.modifier().fmt(f)
+    }
+}
+
+impl GenBlockKind {
+    pub fn modifier(&self) -> &'static str {
+        match self {
+            GenBlockKind::Async => "async",
+            GenBlockKind::Gen => "gen",
+        }
+    }
 }
 
 /// The explicit `Self` type in a "qualified path". The actual
@@ -2015,6 +2039,8 @@ pub struct BareFnTy {
 }
 
 /// The various kinds of type recognized by the compiler.
+//
+// Adding a new variant? Please update `test_ty` in `tests/ui/macros/stringify.rs`.
 #[derive(Clone, Encodable, Decodable, Debug)]
 pub enum TyKind {
     /// A variable-length slice (`[T]`).
@@ -2353,6 +2379,12 @@ pub enum Unsafe {
 
 #[derive(Copy, Clone, Encodable, Decodable, Debug)]
 pub enum Async {
+    Yes { span: Span, closure_id: NodeId, return_impl_trait_id: NodeId },
+    No,
+}
+
+#[derive(Copy, Clone, Encodable, Decodable, Debug)]
+pub enum Gen {
     Yes { span: Span, closure_id: NodeId, return_impl_trait_id: NodeId },
     No,
 }
@@ -2880,6 +2912,7 @@ pub struct ConstItem {
     pub expr: Option<P<Expr>>,
 }
 
+// Adding a new variant? Please update `test_item` in `tests/ui/macros/stringify.rs`.
 #[derive(Clone, Encodable, Decodable, Debug)]
 pub enum ItemKind {
     /// An `extern crate` item, with the optional *original* crate name if the crate was renamed.

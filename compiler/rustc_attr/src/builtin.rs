@@ -10,7 +10,7 @@ use rustc_session::config::ExpectedValues;
 use rustc_session::lint::builtin::UNEXPECTED_CFGS;
 use rustc_session::lint::BuiltinLintDiagnostics;
 use rustc_session::parse::{feature_err, ParseSess};
-use rustc_session::Session;
+use rustc_session::{RustcVersion, Session};
 use rustc_span::hygiene::Transparency;
 use rustc_span::{symbol::sym, symbol::Symbol, Span};
 use std::num::NonZeroU32;
@@ -22,11 +22,6 @@ use crate::session_diagnostics::{self, IncorrectReprFormatGenericCause};
 ///
 /// For more, see [this pull request](https://github.com/rust-lang/rust/pull/100591).
 pub const VERSION_PLACEHOLDER: &str = "CURRENT_RUSTC_VERSION";
-
-pub fn rust_version_symbol() -> Symbol {
-    let version = option_env!("CFG_RELEASE").unwrap_or("<current>");
-    Symbol::intern(&version)
-}
 
 pub fn is_builtin_attr(attr: &Attribute) -> bool {
     attr.is_doc_comment() || attr.ident().is_some_and(|ident| is_builtin_attr_name(ident.name))
@@ -144,11 +139,22 @@ pub enum StabilityLevel {
     /// `#[stable]`
     Stable {
         /// Rust release which stabilized this feature.
-        since: Symbol,
+        since: Since,
         /// Is this item allowed to be referred to on stable, despite being contained in unstable
         /// modules?
         allowed_through_unstable_modules: bool,
     },
+}
+
+/// Rust release in which a feature is stabilized.
+#[derive(Encodable, Decodable, PartialEq, Copy, Clone, Debug, Eq, Hash)]
+#[derive(HashStable_Generic)]
+pub enum Since {
+    Version(RustcVersion),
+    /// Stabilized in the upcoming version, whatever number that is.
+    Current,
+    /// Failed to parse a stabilization version.
+    Err,
 }
 
 impl StabilityLevel {
@@ -372,22 +378,24 @@ fn parse_stability(sess: &Session, attr: &Attribute) -> Option<(Symbol, Stabilit
 
     let since = if let Some(since) = since {
         if since.as_str() == VERSION_PLACEHOLDER {
-            Ok(rust_version_symbol())
-        } else if parse_version(since.as_str(), false).is_some() {
-            Ok(since)
+            Since::Current
+        } else if let Some(version) = parse_version(since) {
+            Since::Version(version)
         } else {
-            Err(sess.emit_err(session_diagnostics::InvalidSince { span: attr.span }))
+            sess.emit_err(session_diagnostics::InvalidSince { span: attr.span });
+            Since::Err
         }
     } else {
-        Err(sess.emit_err(session_diagnostics::MissingSince { span: attr.span }))
+        sess.emit_err(session_diagnostics::MissingSince { span: attr.span });
+        Since::Err
     };
 
-    match (feature, since) {
-        (Ok(feature), Ok(since)) => {
+    match feature {
+        Ok(feature) => {
             let level = StabilityLevel::Stable { since, allowed_through_unstable_modules: false };
             Some((feature, level))
         }
-        (Err(ErrorGuaranteed { .. }), _) | (_, Err(ErrorGuaranteed { .. })) => None,
+        Err(ErrorGuaranteed { .. }) => None,
     }
 }
 
@@ -556,24 +564,20 @@ fn gate_cfg(gated_cfg: &GatedCfg, cfg_span: Span, sess: &ParseSess, features: &F
     }
 }
 
-#[derive(Clone, Debug, PartialEq, Eq, PartialOrd, Ord)]
-struct Version {
-    major: u16,
-    minor: u16,
-    patch: u16,
-}
-
-fn parse_version(s: &str, allow_appendix: bool) -> Option<Version> {
-    let mut components = s.split('-');
+/// Parse a rustc version number written inside string literal in an attribute,
+/// like appears in `since = "1.0.0"`. Suffixes like "-dev" and "-nightly" are
+/// not accepted in this position, unlike when parsing CFG_RELEASE.
+fn parse_version(s: Symbol) -> Option<RustcVersion> {
+    let mut components = s.as_str().split('-');
     let d = components.next()?;
-    if !allow_appendix && components.next().is_some() {
+    if components.next().is_some() {
         return None;
     }
     let mut digits = d.splitn(3, '.');
     let major = digits.next()?.parse().ok()?;
     let minor = digits.next()?.parse().ok()?;
     let patch = digits.next().unwrap_or("0").parse().ok()?;
-    Some(Version { major, minor, patch })
+    Some(RustcVersion { major, minor, patch })
 }
 
 /// Evaluate a cfg-like condition (with `any` and `all`), using `eval` to
@@ -605,17 +609,16 @@ pub fn eval_condition(
                     return false;
                 }
             };
-            let Some(min_version) = parse_version(min_version.as_str(), false) else {
+            let Some(min_version) = parse_version(*min_version) else {
                 sess.emit_warning(session_diagnostics::UnknownVersionLiteral { span: *span });
                 return false;
             };
-            let rustc_version = parse_version(env!("CFG_RELEASE"), true).unwrap();
 
             // See https://github.com/rust-lang/rust/issues/64796#issuecomment-640851454 for details
             if sess.assume_incomplete_release {
-                rustc_version > min_version
+                RustcVersion::CURRENT > min_version
             } else {
-                rustc_version >= min_version
+                RustcVersion::CURRENT >= min_version
             }
         }
         ast::MetaItemKind::List(mis) => {

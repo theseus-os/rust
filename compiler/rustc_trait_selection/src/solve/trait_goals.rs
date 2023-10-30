@@ -22,6 +22,10 @@ impl<'tcx> assembly::GoalKind<'tcx> for TraitPredicate<'tcx> {
         self.trait_ref
     }
 
+    fn polarity(self) -> ty::ImplPolarity {
+        self.polarity
+    }
+
     fn with_self_ty(self, tcx: TyCtxt<'tcx>, self_ty: Ty<'tcx>) -> Self {
         self.with_self_ty(tcx, self_ty)
     }
@@ -238,14 +242,25 @@ impl<'tcx> assembly::GoalKind<'tcx> for TraitPredicate<'tcx> {
         ecx: &mut EvalCtxt<'_, 'tcx>,
         goal: Goal<'tcx, Self>,
     ) -> QueryResult<'tcx> {
-        if goal.predicate.polarity != ty::ImplPolarity::Positive {
-            return Err(NoSolution);
-        }
-
-        if let ty::FnPtr(..) = goal.predicate.self_ty().kind() {
-            ecx.evaluate_added_goals_and_make_canonical_response(Certainty::Yes)
-        } else {
-            Err(NoSolution)
+        let self_ty = goal.predicate.self_ty();
+        match goal.predicate.polarity {
+            ty::ImplPolarity::Positive => {
+                if self_ty.is_fn_ptr() {
+                    ecx.evaluate_added_goals_and_make_canonical_response(Certainty::Yes)
+                } else {
+                    Err(NoSolution)
+                }
+            }
+            ty::ImplPolarity::Negative => {
+                // If a type is rigid and not a fn ptr, then we know for certain
+                // that it does *not* implement `FnPtr`.
+                if !self_ty.is_fn_ptr() && self_ty.is_known_rigid() {
+                    ecx.evaluate_added_goals_and_make_canonical_response(Certainty::Yes)
+                } else {
+                    Err(NoSolution)
+                }
+            }
+            ty::ImplPolarity::Reservation => bug!(),
         }
     }
 
@@ -335,6 +350,30 @@ impl<'tcx> assembly::GoalKind<'tcx> for TraitPredicate<'tcx> {
         ecx.evaluate_added_goals_and_make_canonical_response(Certainty::Yes)
     }
 
+    fn consider_builtin_iterator_candidate(
+        ecx: &mut EvalCtxt<'_, 'tcx>,
+        goal: Goal<'tcx, Self>,
+    ) -> QueryResult<'tcx> {
+        if goal.predicate.polarity != ty::ImplPolarity::Positive {
+            return Err(NoSolution);
+        }
+
+        let ty::Coroutine(def_id, _, _) = *goal.predicate.self_ty().kind() else {
+            return Err(NoSolution);
+        };
+
+        // Coroutines are not iterators unless they come from `gen` desugaring
+        let tcx = ecx.tcx();
+        if !tcx.coroutine_is_gen(def_id) {
+            return Err(NoSolution);
+        }
+
+        // Gen coroutines unconditionally implement `Iterator`
+        // Technically, we need to check that the iterator output type is Sized,
+        // but that's already proven by the coroutines being WF.
+        ecx.evaluate_added_goals_and_make_canonical_response(Certainty::Yes)
+    }
+
     fn consider_builtin_coroutine_candidate(
         ecx: &mut EvalCtxt<'_, 'tcx>,
         goal: Goal<'tcx, Self>,
@@ -350,7 +389,7 @@ impl<'tcx> assembly::GoalKind<'tcx> for TraitPredicate<'tcx> {
 
         // `async`-desugared coroutines do not implement the coroutine trait
         let tcx = ecx.tcx();
-        if tcx.coroutine_is_async(def_id) {
+        if !tcx.is_general_coroutine(def_id) {
             return Err(NoSolution);
         }
 

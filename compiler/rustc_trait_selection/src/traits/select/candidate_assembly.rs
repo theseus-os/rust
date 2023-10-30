@@ -52,8 +52,7 @@ impl<'cx, 'tcx> SelectionContext<'cx, 'tcx> {
 
         let mut candidates = SelectionCandidateSet { vec: Vec::new(), ambiguous: false };
 
-        // The only way to prove a NotImplemented(T: Foo) predicate is via a negative impl.
-        // There are no compiler built-in rules for this.
+        // Negative trait predicates have different rules than positive trait predicates.
         if obligation.polarity() == ty::ImplPolarity::Negative {
             self.assemble_candidates_for_trait_alias(obligation, &mut candidates);
             self.assemble_candidates_from_impls(obligation, &mut candidates);
@@ -114,6 +113,8 @@ impl<'cx, 'tcx> SelectionContext<'cx, 'tcx> {
                     self.assemble_coroutine_candidates(obligation, &mut candidates);
                 } else if lang_items.future_trait() == Some(def_id) {
                     self.assemble_future_candidates(obligation, &mut candidates);
+                } else if lang_items.iterator_trait() == Some(def_id) {
+                    self.assemble_iterator_candidates(obligation, &mut candidates);
                 }
 
                 self.assemble_closure_candidates(obligation, &mut candidates);
@@ -211,9 +212,9 @@ impl<'cx, 'tcx> SelectionContext<'cx, 'tcx> {
         // type/region parameters.
         let self_ty = obligation.self_ty().skip_binder();
         match self_ty.kind() {
-            // async constructs get lowered to a special kind of coroutine that
+            // `async`/`gen` constructs get lowered to a special kind of coroutine that
             // should *not* `impl Coroutine`.
-            ty::Coroutine(did, ..) if !self.tcx().coroutine_is_async(*did) => {
+            ty::Coroutine(did, ..) if self.tcx().is_general_coroutine(*did) => {
                 debug!(?self_ty, ?obligation, "assemble_coroutine_candidates",);
 
                 candidates.vec.push(CoroutineCandidate);
@@ -239,6 +240,23 @@ impl<'cx, 'tcx> SelectionContext<'cx, 'tcx> {
                 debug!(?self_ty, ?obligation, "assemble_future_candidates",);
 
                 candidates.vec.push(FutureCandidate);
+            }
+        }
+    }
+
+    fn assemble_iterator_candidates(
+        &mut self,
+        obligation: &PolyTraitObligation<'tcx>,
+        candidates: &mut SelectionCandidateSet<'tcx>,
+    ) {
+        let self_ty = obligation.self_ty().skip_binder();
+        if let ty::Coroutine(did, ..) = self_ty.kind() {
+            // gen constructs get lowered to a special kind of coroutine that
+            // should directly `impl Iterator`.
+            if self.tcx().coroutine_is_gen(*did) {
+                debug!(?self_ty, ?obligation, "assemble_iterator_candidates",);
+
+                candidates.vec.push(IteratorCandidate);
             }
         }
     }
@@ -1064,6 +1082,7 @@ impl<'cx, 'tcx> SelectionContext<'cx, 'tcx> {
         candidates: &mut SelectionCandidateSet<'tcx>,
     ) {
         let self_ty = self.infcx.shallow_resolve(obligation.self_ty());
+
         match self_ty.skip_binder().kind() {
             ty::FnPtr(_) => candidates.vec.push(BuiltinCandidate { has_nested: false }),
             ty::Bool

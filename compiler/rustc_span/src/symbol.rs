@@ -98,6 +98,7 @@ symbols! {
         Builtin:            "builtin",
         Catch:              "catch",
         Default:            "default",
+        Gen:                "gen",
         MacroRules:         "macro_rules",
         Raw:                "raw",
         Union:              "union",
@@ -225,6 +226,7 @@ symbols! {
         IpAddr,
         IrTyKind,
         Is,
+        Item,
         ItemContext,
         IterEmpty,
         IterOnce,
@@ -713,6 +715,7 @@ symbols! {
         encode,
         end,
         env,
+        env_CFG_RELEASE: env!("CFG_RELEASE"),
         eprint_macro,
         eprintln_macro,
         eq,
@@ -817,6 +820,7 @@ symbols! {
         future_trait,
         gdb_script_file,
         ge,
+        gen_blocks,
         gen_future,
         gen_kill,
         generator_clone,
@@ -910,6 +914,7 @@ symbols! {
         iter,
         iter_mut,
         iter_repeat,
+        iterator,
         iterator_collect_fn,
         kcfi,
         keyword,
@@ -1777,6 +1782,7 @@ symbols! {
         xmm_reg,
         yeet_desugar_details,
         yeet_expr,
+        yield_expr,
         ymm_reg,
         zmm_reg,
     }
@@ -2187,8 +2193,9 @@ impl Symbol {
         self >= kw::Abstract && self <= kw::Yield
     }
 
-    fn is_unused_keyword_conditional(self, edition: impl FnOnce() -> Edition) -> bool {
-        self == kw::Try && edition() >= Edition::Edition2018
+    fn is_unused_keyword_conditional(self, edition: impl Copy + FnOnce() -> Edition) -> bool {
+        self == kw::Try && edition().at_least_rust_2018()
+            || self == kw::Gen && edition().at_least_rust_2024()
     }
 
     pub fn is_reserved(self, edition: impl Copy + FnOnce() -> Edition) -> bool {

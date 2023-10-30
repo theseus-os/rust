@@ -53,7 +53,6 @@ macro_rules! p {
 }
 macro_rules! define_scoped_cx {
     ($cx:ident) => {
-        #[allow(unused_macros)]
         macro_rules! scoped_cx {
             () => {
                 $cx
@@ -408,8 +407,6 @@ pub trait PrettyPrinter<'tcx>: Printer<'tcx> + fmt::Write {
         def_id: DefId,
         callers: &mut Vec<DefId>,
     ) -> Result<bool, PrintError> {
-        define_scoped_cx!(self);
-
         debug!("try_print_visible_def_path: def_id={:?}", def_id);
 
         // If `def_id` is a direct or injected extern crate, return the
@@ -1194,7 +1191,7 @@ pub trait PrettyPrinter<'tcx>: Printer<'tcx> + fmt::Write {
         None
     }
 
-    fn const_infer_name(&self, _: ty::ConstVid<'tcx>) -> Option<Symbol> {
+    fn const_infer_name(&self, _: ty::ConstVid) -> Option<Symbol> {
         None
     }
 
@@ -1742,7 +1739,7 @@ pub struct FmtPrinterData<'a, 'tcx> {
     pub region_highlight_mode: RegionHighlightMode<'tcx>,
 
     pub ty_infer_name_resolver: Option<Box<dyn Fn(ty::TyVid) -> Option<Symbol> + 'a>>,
-    pub const_infer_name_resolver: Option<Box<dyn Fn(ty::ConstVid<'tcx>) -> Option<Symbol> + 'a>>,
+    pub const_infer_name_resolver: Option<Box<dyn Fn(ty::ConstVid) -> Option<Symbol> + 'a>>,
 }
 
 impl<'a, 'tcx> Deref for FmtPrinter<'a, 'tcx> {
@@ -1868,8 +1865,6 @@ impl<'tcx> Printer<'tcx> for FmtPrinter<'_, 'tcx> {
         def_id: DefId,
         args: &'tcx [GenericArg<'tcx>],
     ) -> Result<(), PrintError> {
-        define_scoped_cx!(self);
-
         if args.is_empty() {
             match self.try_print_trimmed_def_path(def_id)? {
                 true => return Ok(()),
@@ -2082,7 +2077,7 @@ impl<'tcx> PrettyPrinter<'tcx> for FmtPrinter<'_, 'tcx> {
         self.printed_type_count = 0;
     }
 
-    fn const_infer_name(&self, id: ty::ConstVid<'tcx>) -> Option<Symbol> {
+    fn const_infer_name(&self, id: ty::ConstVid) -> Option<Symbol> {
         self.0.const_infer_name_resolver.as_ref().and_then(|func| func(id))
     }
 
@@ -2401,8 +2396,6 @@ impl<'tcx> FmtPrinter<'_, 'tcx> {
             let _ = write!(cx, "{cont}");
         };
 
-        define_scoped_cx!(self);
-
         let possible_names = ('a'..='z').rev().map(|s| Symbol::intern(&format!("'{s}")));
 
         let mut available_names = possible_names
@@ -2630,41 +2623,6 @@ where
     }
 }
 
-macro_rules! forward_display_to_print {
-    ($($ty:ty),+) => {
-        // Some of the $ty arguments may not actually use 'tcx
-        $(#[allow(unused_lifetimes)] impl<'tcx> fmt::Display for $ty {
-            fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
-                ty::tls::with(|tcx| {
-                    let mut cx = FmtPrinter::new(tcx, Namespace::TypeNS);
-                    tcx.lift(*self)
-                        .expect("could not lift for printing")
-                        .print(&mut cx)?;
-                    f.write_str(&cx.into_buffer())?;
-                    Ok(())
-                })
-            }
-        })+
-    };
-}
-
-macro_rules! define_print_and_forward_display {
-    (($self:ident, $cx:ident): $($ty:ty $print:block)+) => {
-        $(impl<'tcx, P: PrettyPrinter<'tcx>> Print<'tcx, P> for $ty {
-            fn print(&$self, $cx: &mut P) -> Result<(), PrintError> {
-                #[allow(unused_mut)]
-                let mut $cx = $cx;
-                define_scoped_cx!($cx);
-                let _: () = $print;
-                #[allow(unreachable_code)]
-                Ok(())
-            }
-        })+
-
-        forward_display_to_print!($($ty),+);
-    };
-}
-
 /// Wrapper type for `ty::TraitRef` which opts-in to pretty printing only
 /// the trait path. That is, it will print `Trait<U>` instead of
 /// `<T as Trait<U>>`.
@@ -2739,6 +2697,43 @@ pub struct PrintClosureAsImpl<'tcx> {
     pub closure: ty::ClosureArgs<'tcx>,
 }
 
+macro_rules! forward_display_to_print {
+    ($($ty:ty),+) => {
+        // Some of the $ty arguments may not actually use 'tcx
+        $(#[allow(unused_lifetimes)] impl<'tcx> fmt::Display for $ty {
+            fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
+                ty::tls::with(|tcx| {
+                    let mut cx = FmtPrinter::new(tcx, Namespace::TypeNS);
+                    tcx.lift(*self)
+                        .expect("could not lift for printing")
+                        .print(&mut cx)?;
+                    f.write_str(&cx.into_buffer())?;
+                    Ok(())
+                })
+            }
+        })+
+    };
+}
+
+macro_rules! define_print {
+    (($self:ident, $cx:ident): $($ty:ty $print:block)+) => {
+        $(impl<'tcx, P: PrettyPrinter<'tcx>> Print<'tcx, P> for $ty {
+            fn print(&$self, $cx: &mut P) -> Result<(), PrintError> {
+                define_scoped_cx!($cx);
+                let _: () = $print;
+                Ok(())
+            }
+        })+
+    };
+}
+
+macro_rules! define_print_and_forward_display {
+    (($self:ident, $cx:ident): $($ty:ty $print:block)+) => {
+        define_print!(($self, $cx): $($ty $print)*);
+        forward_display_to_print!($($ty),+);
+    };
+}
+
 forward_display_to_print! {
     ty::Region<'tcx>,
     Ty<'tcx>,
@@ -2757,6 +2752,51 @@ forward_display_to_print! {
     ty::Binder<'tcx, ty::ProjectionPredicate<'tcx>>,
     ty::OutlivesPredicate<Ty<'tcx>, ty::Region<'tcx>>,
     ty::OutlivesPredicate<ty::Region<'tcx>, ty::Region<'tcx>>
+}
+
+define_print! {
+    (self, cx):
+
+    ty::ClauseKind<'tcx> {
+        match *self {
+            ty::ClauseKind::Trait(ref data) => {
+                p!(print(data))
+            }
+            ty::ClauseKind::RegionOutlives(predicate) => p!(print(predicate)),
+            ty::ClauseKind::TypeOutlives(predicate) => p!(print(predicate)),
+            ty::ClauseKind::Projection(predicate) => p!(print(predicate)),
+            ty::ClauseKind::ConstArgHasType(ct, ty) => {
+                p!("the constant `", print(ct), "` has type `", print(ty), "`")
+            },
+            ty::ClauseKind::WellFormed(arg) => p!(print(arg), " well-formed"),
+            ty::ClauseKind::ConstEvaluatable(ct) => {
+                p!("the constant `", print(ct), "` can be evaluated")
+            }
+        }
+    }
+
+    ty::PredicateKind<'tcx> {
+        match *self {
+            ty::PredicateKind::Clause(data) => {
+                p!(print(data))
+            }
+            ty::PredicateKind::Subtype(predicate) => p!(print(predicate)),
+            ty::PredicateKind::Coerce(predicate) => p!(print(predicate)),
+            ty::PredicateKind::ObjectSafe(trait_def_id) => {
+                p!("the trait `", print_def_path(trait_def_id, &[]), "` is object-safe")
+            }
+            ty::PredicateKind::ClosureKind(closure_def_id, _closure_args, kind) => p!(
+                "the closure `",
+                print_value_path(closure_def_id, &[]),
+                write("` implements the trait `{}`", kind)
+            ),
+            ty::PredicateKind::ConstEquate(c1, c2) => {
+                p!("the constant `", print(c1), "` equals `", print(c2), "`")
+            }
+            ty::PredicateKind::Ambiguous => p!("ambiguous"),
+            ty::PredicateKind::AliasRelate(t1, t2, dir) => p!(print(t1), write(" {} ", dir), print(t2)),
+        }
+    }
 }
 
 define_print_and_forward_display! {
@@ -2887,53 +2927,11 @@ define_print_and_forward_display! {
     }
 
     ty::Predicate<'tcx> {
-        let binder = self.kind();
-        p!(print(binder))
+        p!(print(self.kind()))
     }
 
     ty::Clause<'tcx> {
         p!(print(self.kind()))
-    }
-
-    ty::ClauseKind<'tcx> {
-        match *self {
-            ty::ClauseKind::Trait(ref data) => {
-                p!(print(data))
-            }
-            ty::ClauseKind::RegionOutlives(predicate) => p!(print(predicate)),
-            ty::ClauseKind::TypeOutlives(predicate) => p!(print(predicate)),
-            ty::ClauseKind::Projection(predicate) => p!(print(predicate)),
-            ty::ClauseKind::ConstArgHasType(ct, ty) => {
-                p!("the constant `", print(ct), "` has type `", print(ty), "`")
-            },
-            ty::ClauseKind::WellFormed(arg) => p!(print(arg), " well-formed"),
-            ty::ClauseKind::ConstEvaluatable(ct) => {
-                p!("the constant `", print(ct), "` can be evaluated")
-            }
-        }
-    }
-
-    ty::PredicateKind<'tcx> {
-        match *self {
-            ty::PredicateKind::Clause(data) => {
-                p!(print(data))
-            }
-            ty::PredicateKind::Subtype(predicate) => p!(print(predicate)),
-            ty::PredicateKind::Coerce(predicate) => p!(print(predicate)),
-            ty::PredicateKind::ObjectSafe(trait_def_id) => {
-                p!("the trait `", print_def_path(trait_def_id, &[]), "` is object-safe")
-            }
-            ty::PredicateKind::ClosureKind(closure_def_id, _closure_args, kind) => p!(
-                "the closure `",
-                print_value_path(closure_def_id, &[]),
-                write("` implements the trait `{}`", kind)
-            ),
-            ty::PredicateKind::ConstEquate(c1, c2) => {
-                p!("the constant `", print(c1), "` equals `", print(c2), "`")
-            }
-            ty::PredicateKind::Ambiguous => p!("ambiguous"),
-            ty::PredicateKind::AliasRelate(t1, t2, dir) => p!(print(t1), write(" {} ", dir), print(t2)),
-        }
     }
 
     GenericArg<'tcx> {
