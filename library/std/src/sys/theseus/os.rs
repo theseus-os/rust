@@ -1,26 +1,27 @@
-use crate::{
-    error::Error as StdError,
-    ffi::{OsStr, OsString},
-    fmt, io,
-    marker::PhantomData,
-    path::{self, PathBuf},
-};
+use super::unsupported;
+use crate::error::Error as StdError;
+use crate::ffi::{OsStr, OsString};
+use crate::fmt;
+use crate::io;
+use crate::marker::PhantomData;
+use crate::path::{self, PathBuf};
+use crate::sys::theseus::convert_err;
 
 pub fn errno() -> i32 {
-    panic!("should not be used on this target");
+    panic!("not supported on this platform")
 }
 
 pub fn error_string(_errno: i32) -> String {
-    panic!("should not be used on this target");
+    panic!("not supported on this platform")
 }
 
 pub fn getcwd() -> io::Result<PathBuf> {
-    let cwd = theseus_shim::getcwd();
-    Ok(cwd.into())
+    Ok(theseus_shim::getcwd().into())
 }
 
 pub fn chdir(path: &path::Path) -> io::Result<()> {
-    theseus_shim::chdir(path.to_str().ok_or(theseus_shim::Error::InvalidFilename)?);
+    let path = path.to_str().ok_or_else(|| convert_err(theseus_shim::Error::InvalidFilename))?;
+    theseus_shim::chdir(path).map_err(convert_err)?;
     Ok(())
 }
 
@@ -45,7 +46,6 @@ where
     I: Iterator<Item = T>,
     T: AsRef<OsStr>,
 {
-    // Theseus doesn't have the concept of a `PATH` environment variable.
     Err(JoinPathsError)
 }
 
@@ -63,23 +63,36 @@ impl StdError for JoinPathsError {
 }
 
 pub fn current_exe() -> io::Result<PathBuf> {
-    todo!();
+    unsupported()
 }
 
-pub struct Env {
-    _inner: (),
+pub struct Env(!);
+
+impl Env {
+    // FIXME(https://github.com/rust-lang/rust/issues/114583): Remove this when <OsStr as Debug>::fmt matches <str as Debug>::fmt.
+    pub fn str_debug(&self) -> impl fmt::Debug + '_ {
+        let Self(inner) = self;
+        match *inner {}
+    }
+}
+
+impl fmt::Debug for Env {
+    fn fmt(&self, _: &mut fmt::Formatter<'_>) -> fmt::Result {
+        let Self(inner) = self;
+        match *inner {}
+    }
 }
 
 impl Iterator for Env {
     type Item = (OsString, OsString);
-
     fn next(&mut self) -> Option<(OsString, OsString)> {
-        todo!();
+        let Self(inner) = self;
+        match *inner {}
     }
 }
 
 pub fn env() -> Env {
-    todo!();
+    panic!("not supported on this platform")
 }
 
 pub fn getenv(key: &OsStr) -> Option<OsString> {
@@ -90,12 +103,12 @@ pub fn getenv(key: &OsStr) -> Option<OsString> {
 pub fn setenv(key: &OsStr, value: &OsStr) -> io::Result<()> {
     let key = rstr(key)?;
     let value = rstr(value)?;
-    theseus_shim::setenv(key, value).map_err(|e| e.into())
+    theseus_shim::setenv(key, value).map_err(convert_err)
 }
 
 pub fn unsetenv(key: &OsStr) -> io::Result<()> {
     let key = rstr(key)?;
-    theseus_shim::unsetenv(key).map_err(|e| e.into())
+    theseus_shim::unsetenv(key).map_err(convert_err)
 }
 
 pub fn temp_dir() -> PathBuf {
@@ -115,6 +128,5 @@ pub fn getpid() -> u32 {
 }
 
 fn rstr(s: &OsStr) -> Result<&str, io::Error> {
-    // TODO: Lazy?
-    s.to_str().ok_or(theseus_shim::Error::InvalidInput.into())
+    s.to_str().ok_or_else(|| convert_err(theseus_shim::Error::InvalidInput))
 }

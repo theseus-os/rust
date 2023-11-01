@@ -48,7 +48,9 @@ cfg_if::cfg_if! {
                  feature = "restricted-std",
                  all(target_family = "wasm", not(target_os = "emscripten")),
                  target_os = "xous",
-                 all(target_vendor = "fortanix", target_env = "sgx")))] {
+                 all(target_vendor = "fortanix", target_env = "sgx"),
+                 // TODO: Is this fine?
+                 target_os = "theseus"))] {
         pub use crate::sys::net;
     } else {
         pub mod net;

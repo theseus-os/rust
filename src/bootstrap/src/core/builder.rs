@@ -1431,11 +1431,11 @@ impl<'a> Builder<'a> {
         // cargo would implicitly add it, it was discover that sometimes bootstrap only use
         // `rustflags` without `cargo` making it required.
         rustflags.arg("-Zunstable-options");
-        for (restricted_mode, _name, values) in EXTRA_CHECK_CFGS {
+        for (restricted_mode, name, values) in EXTRA_CHECK_CFGS {
             if *restricted_mode == None || *restricted_mode == Some(mode) {
                 // Creating a string of the values by concatenating each value:
                 // ',"tvos","watchos"' or '' (nothing) when there are no values
-                let _values = match values {
+                let values = match values {
                     Some(values) => values
                         .iter()
                         .map(|val| [",", "\"", val, "\""])
@@ -1443,16 +1443,12 @@ impl<'a> Builder<'a> {
                         .collect::<String>(),
                     None => String::new(),
                 };
-<<<<<<< HEAD
-                // rustflags.arg(&format!("--check-cfg=values({name}{values})"));
-=======
                 if use_new_check_cfg_syntax {
                     let values = values.strip_prefix(",").unwrap_or(&values); // remove the first `,`
                     rustflags.arg(&format!("--check-cfg=cfg({name},values({values}))"));
                 } else {
                     rustflags.arg(&format!("--check-cfg=values({name}{values})"));
                 }
->>>>>>> master
             }
         }
 

@@ -58,7 +58,7 @@ r-efi-alloc = { version = "1.0.0", features = ['rustc-dep-of-std']}
 [target.'cfg(target_os = "theseus")'.dependencies]
 theseus-shim = { path = "../../../../shim", features = ['rustc-dep-of-std'] }
 # needed for the mem intrinsics
-alloc = { path = "../alloc", features = ['compiler-builtins-mem'] }
+alloc = { path = "../alloc", features = ['compiler-builtins-mem', 'compiler-builtins-c'] }
 
 [features]
 backtrace = [

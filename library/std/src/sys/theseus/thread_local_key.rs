@@ -1,6 +1,3 @@
-//! Theseus has support for TLS sections and so these functions should not be
-//! used.
-
 pub type Key = usize;
 
 #[inline]
@@ -20,10 +17,5 @@ pub unsafe fn get(_key: Key) -> *mut u8 {
 
 #[inline]
 pub unsafe fn destroy(_key: Key) {
-    panic!("should not be used on this target");
-}
-
-#[inline]
-pub fn requires_synchronized_create() -> bool {
     panic!("should not be used on this target");
 }

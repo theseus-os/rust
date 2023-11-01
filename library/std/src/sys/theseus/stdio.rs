@@ -1,4 +1,4 @@
-use crate::io;
+use crate::{io, sys::theseus::convert_err};
 
 pub struct Stdin;
 pub struct Stdout;
@@ -12,7 +12,11 @@ impl Stdin {
 
 impl io::Read for Stdin {
     fn read(&mut self, buf: &mut [u8]) -> io::Result<usize> {
-        theseus_shim::read(&mut theseus_shim::stdin(), buf).map_err(|e| e.into())
+        theseus_shim::read(
+            &mut Result::from(theseus_shim::stdin()).map_err(convert_err)?,
+            buf,
+        )
+        .map_err(convert_err)
     }
 }
 
@@ -24,11 +28,16 @@ impl Stdout {
 
 impl io::Write for Stdout {
     fn write(&mut self, buf: &[u8]) -> io::Result<usize> {
-        theseus_shim::write(&mut theseus_shim::stdout(), buf).map_err(|e| e.into())
+        theseus_shim::write(
+            &mut Result::from(theseus_shim::stdout()).map_err(convert_err)?,
+            buf,
+        )
+        .map_err(convert_err)
     }
 
     fn flush(&mut self) -> io::Result<()> {
-        theseus_shim::flush(&mut theseus_shim::stdout()).map_err(|e| e.into())
+        theseus_shim::flush(&mut Result::from(theseus_shim::stdout()).map_err(convert_err)?)
+            .map_err(convert_err)
     }
 }
 
@@ -40,11 +49,16 @@ impl Stderr {
 
 impl io::Write for Stderr {
     fn write(&mut self, buf: &[u8]) -> io::Result<usize> {
-        theseus_shim::write(&mut theseus_shim::stderr(), buf).map_err(|e| e.into())
+        theseus_shim::write(
+            &mut Result::from(theseus_shim::stderr()).map_err(convert_err)?,
+            buf,
+        )
+        .map_err(convert_err)
     }
 
     fn flush(&mut self) -> io::Result<()> {
-        theseus_shim::flush(&mut theseus_shim::stderr()).map_err(|e| e.into())
+        theseus_shim::flush(&mut Result::from(theseus_shim::stderr()).map_err(convert_err)?)
+            .map_err(convert_err)
     }
 }
 
