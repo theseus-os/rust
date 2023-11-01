@@ -3317,15 +3317,6 @@ dependencies = [
 ]
 
 [[package]]
-name = "rust-ffi"
-version = "0.1.0"
-dependencies = [
- "compiler_builtins",
- "rustc-std-workspace-alloc",
- "rustc-std-workspace-core",
-]
-
-[[package]]
 name = "rustbook"
 version = "0.1.0"
 dependencies = [
@@ -5381,7 +5372,16 @@ dependencies = [
 name = "theseus-shim"
 version = "0.1.0"
 dependencies = [
- "rust-ffi",
+ "rustc-std-workspace-alloc",
+ "rustc-std-workspace-core",
+ "theseus_ffi",
+]
+
+[[package]]
+name = "theseus_ffi"
+version = "0.1.0"
+dependencies = [
+ "compiler_builtins",
  "rustc-std-workspace-alloc",
  "rustc-std-workspace-core",
 ]
