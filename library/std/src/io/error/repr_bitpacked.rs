@@ -294,7 +294,7 @@ fn kind_from_prim(ek: u32) -> Option<ErrorKind> {
                 $($Enum::$Variant => ()),*
             };
             match $prim {
-                $(v if v == ($Enum::$Variant as _) => Some($Enum::$Variant),)*
+                $(v if v == ($Enum::$Variant as u32) => Some($Enum::$Variant),)*
                 _ => None,
             }
         }}
