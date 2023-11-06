@@ -28,7 +28,6 @@ pub mod time;
 mod common;
 pub use common::*;
 
-
 fn convert_err(value: theseus_shim::Error) -> crate::io::Error {
     use crate::io::ErrorKind;
     use theseus_shim::Error;

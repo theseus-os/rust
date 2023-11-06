@@ -55,11 +55,6 @@ wasi = { version = "0.11.0", features = ['rustc-dep-of-std'], default-features =
 r-efi = { version = "4.2.0", features = ['rustc-dep-of-std']}
 r-efi-alloc = { version = "1.0.0", features = ['rustc-dep-of-std']}
 
-[target.'cfg(target_os = "theseus")'.dependencies]
-theseus-shim = { path = "../../../../shim", features = ['rustc-dep-of-std'] }
-# needed for the mem intrinsics
-alloc = { path = "../alloc", features = ['compiler-builtins-mem', 'compiler-builtins-c'] }
-
 [features]
 backtrace = [
   "gimli-symbolize",
@@ -98,3 +93,10 @@ heap_size = 0x8000000
 name = "stdbenches"
 path = "benches/lib.rs"
 test = true
+
+# TODO: Move up
+[target.'cfg(target_os = "theseus")'.dependencies]
+# When built using -Zbuild-std, the std source code is located in:
+# theseus/ports/rust/build/$(HOST_TRIPLE)/stage1/lib/rustlib/src/rust/library/std
+# hence the need for so many parent directories.
+theseus-shim = { path = "../../../../../../../../../../../shim", features = ['rustc-dep-of-std'] }

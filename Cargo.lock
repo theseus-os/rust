@@ -5119,6 +5119,7 @@ dependencies = [
  "rand_xorshift",
  "rustc-demangle",
  "std_detect",
+ "theseus-shim",
  "unwind",
  "wasi",
 ]
@@ -5370,6 +5371,25 @@ dependencies = [
  "libc",
  "num_cpus",
  "term",
+]
+
+[[package]]
+name = "theseus-shim"
+version = "0.1.0"
+dependencies = [
+ "compiler_builtins",
+ "rustc-std-workspace-alloc",
+ "rustc-std-workspace-core",
+ "theseus_ffi",
+]
+
+[[package]]
+name = "theseus_ffi"
+version = "0.1.0"
+dependencies = [
+ "compiler_builtins",
+ "rustc-std-workspace-alloc",
+ "rustc-std-workspace-core",
 ]
 
 [[package]]
