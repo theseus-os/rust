@@ -99,4 +99,4 @@ test = true
 # When built using -Zbuild-std, the std source code is located in:
 # theseus/ports/rust/build/$(HOST_TRIPLE)/stage1/lib/rustlib/src/rust/library/std
 # hence the need for so many parent directories.
-theseus-shim = { path = "../../../../../../../../../../../shim", features = ['rustc-dep-of-std'] }
+theseus-shim = { path = "../../../../../../../../../../shim", features = ['rustc-dep-of-std'] }
